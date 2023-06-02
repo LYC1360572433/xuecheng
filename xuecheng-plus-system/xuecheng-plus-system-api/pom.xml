@@ -22,6 +22,14 @@
             <artifactId>xuecheng-plus-system-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
 
         <!--cloud的基础环境包-->
         <dependency>
@@ -41,18 +49,18 @@
         <!-- Spring Boot 对 LocalDateTime
           boot-starter-web自动引入
           -->
-       <!-- <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-parameter-names</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jdk8</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-        </dependency>-->
+        <!-- <dependency>
+             <groupId>com.fasterxml.jackson.module</groupId>
+             <artifactId>jackson-module-parameter-names</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>com.fasterxml.jackson.datatype</groupId>
+             <artifactId>jackson-datatype-jdk8</artifactId>
+         </dependency>
+         <dependency>
+             <groupId>com.fasterxml.jackson.datatype</groupId>
+             <artifactId>jackson-datatype-jsr310</artifactId>
+         </dependency>-->
 
         <!--<dependency>
             <groupId>org.apache.commons</groupId>

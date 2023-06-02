@@ -14,6 +14,8 @@ import com.xuecheng.content.service.CourseBaseInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +56,13 @@ public class CourseBaseInfoController {
     @ApiOperation("根据课程id查询接口")
     @GetMapping("/course/{courseId}")
     public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId){
+        //令牌访问的是这个接口
+        //获取当前用户的身份
+        //获取上下文 获取认证信息 获取身份
+        //底层使用thread local 把用户身份放在线程的变量中 线程里面的所有方法都可以拿到身份信息
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(principal);
+
         CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseBaseInfo(courseId);
         return courseBaseInfo;
     }

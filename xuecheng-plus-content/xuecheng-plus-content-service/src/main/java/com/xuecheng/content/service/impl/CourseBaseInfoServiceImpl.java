@@ -10,10 +10,7 @@ import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
-import com.xuecheng.content.model.po.CourseBase;
-import com.xuecheng.content.model.po.CourseMarket;
-import com.xuecheng.content.model.po.CourseTeacher;
-import com.xuecheng.content.model.po.Teachplan;
+import com.xuecheng.content.model.po.*;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -153,6 +150,17 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
             BeanUtils.copyProperties(courseMarket,courseBaseInfoDto);
         }
         //通过courseCategoryMapper查询分类信息，将分类名称放在courseBaseInfoDto对象
+        //查出大分类
+        CourseCategory mtObj = courseCategoryMapper.selectById(courseBase.getMt());
+        String mtName = mtObj.getName();
+        //将大分类名称放在courseBaseInfoDto对象
+        courseBaseInfoDto.setMtName(mtName);
+        //查出小分类
+        CourseCategory stObj = courseCategoryMapper.selectById(courseBase.getSt());
+        String stName = stObj.getName();
+        //将小分类名称放在courseBaseInfoDto对象
+        courseBaseInfoDto.setStName(stName);
+
 //        courseCategoryMapper.selectTreeNodes()
         return courseBaseInfoDto;
     }
@@ -187,7 +195,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         //更新营销信息
         //查询营销信息
         CourseMarket courseMarket = courseMarketMapper.selectById(id);
-        //todo：没看懂为什么要判断
+        //要判断营销信息是否为空 因为在添加的过程中，已经有营销信息，如果没查到的话，可能是数据库不小心删了，不符合实际
         if (courseMarket == null){
             XueChengPlusException.cast("课程营销信息不存在");
         }

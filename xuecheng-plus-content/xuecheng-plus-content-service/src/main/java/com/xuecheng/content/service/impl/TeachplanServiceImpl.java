@@ -2,16 +2,22 @@ package com.xuecheng.content.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.XueChengPlusException;
+import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.content.mapper.TeachplanMapper;
+import com.xuecheng.content.mapper.TeachplanMediaMapper;
+import com.xuecheng.content.model.dto.BindTeachplanMediaDto;
 import com.xuecheng.content.model.dto.SaveTeachplanDto;
 import com.xuecheng.content.model.dto.TeachplanDto;
 import com.xuecheng.content.model.po.Teachplan;
+import com.xuecheng.content.model.po.TeachplanMedia;
 import com.xuecheng.content.service.TeachplanService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,6 +25,10 @@ public class TeachplanServiceImpl implements TeachplanService {
 
     @Autowired
     TeachplanMapper teachplanMapper;
+
+    //要操作哪张表就把哪张表对应的mapper注入进来
+    @Autowired
+    TeachplanMediaMapper teachplanMediaMapper;
 
     @Override
     public List<TeachplanDto> findTeachplanTree(Long courseId) {
@@ -136,5 +146,60 @@ public class TeachplanServiceImpl implements TeachplanService {
             teachplanMapper.updateById(teachplan);
             teachplanMapper.updateById(teachplan1);
         }
+    }
+
+    @Transactional//操作数据库，需要事务控制
+    @Override
+    public TeachplanMedia associationMedia(BindTeachplanMediaDto bindTeachplanMediaDto) {
+
+        //教学计划id
+        Long teachplanId = bindTeachplanMediaDto.getTeachplanId();
+        Teachplan teachplan = teachplanMapper.selectById(teachplanId);
+        if(teachplan==null){
+            XueChengPlusException.cast("教学计划不存在");
+        }
+
+        Integer grade = teachplan.getGrade();
+        if(grade!=2){
+            XueChengPlusException.cast("只允许第二级教学计划绑定媒资文件");
+        }
+
+        //先删除原有记录，根据课程计划的id，删除它所绑定的媒资
+        LambdaQueryWrapper<TeachplanMedia> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TeachplanMedia::getTeachplanId,bindTeachplanMediaDto.getTeachplanId());
+        int delete = teachplanMediaMapper.delete(queryWrapper);
+
+        //再添加新记录
+        //课程id
+        Long courseId = teachplan.getCourseId();
+
+        TeachplanMedia teachplanMedia = new TeachplanMedia();
+        BeanUtils.copyProperties(bindTeachplanMediaDto,teachplanMedia);
+
+        //因为模型类里面的FileName与teachplanMedia里面的MediaFilename字段名不一样，复制不进去
+        teachplanMedia.setMediaFilename(bindTeachplanMediaDto.getFileName());
+        //模型类里面没有的，要自己手动添加
+        teachplanMedia.setCourseId(courseId);
+        teachplanMedia.setCreateDate(LocalDateTime.now());
+        teachplanMediaMapper.insert(teachplanMedia);
+        return teachplanMedia;
+    }
+
+    /**
+     * 删除课程计划的媒资信息
+     * @param teachPlanId 课程计划id
+     * @param mediaId 媒资信息id
+     * @return RestResponse
+     */
+    @Override
+    public RestResponse deleteMediaByteachplanId(Long teachPlanId,String mediaId) {
+        LambdaQueryWrapper<TeachplanMedia> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TeachplanMedia::getMediaId,mediaId);
+        queryWrapper.eq(TeachplanMedia::getTeachplanId,teachPlanId);
+        int delete = teachplanMediaMapper.delete(queryWrapper);
+        if (delete > 0){
+            return new RestResponse(200,"删除课程计划的媒资信息成功");
+        }
+        return new RestResponse(500,"删除课程计划的媒资信息成功");
     }
 }
