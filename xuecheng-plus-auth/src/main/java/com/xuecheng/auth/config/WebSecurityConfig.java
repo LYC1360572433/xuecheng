@@ -29,20 +29,31 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     //配置用户信息服务
-    @Bean
-    public UserDetailsService userDetailsService() {
-        //这里配置用户信息,这里暂时使用这种方式将用户存储在内存中   以后是存在数据库里面
-        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-        manager.createUser(User.withUsername("zhangsan").password("123").authorities("p1").build());
-        manager.createUser(User.withUsername("lisi").password("456").authorities("p2").build());
-        return manager;
-    }
+
+
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        //这里配置用户信息,这里暂时使用这种方式将用户存储在内存中   以后是存在数据库里面
+//        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+//        manager.createUser(User.withUsername("zhangsan").password("123").authorities("p1").build());
+//        manager.createUser(User.withUsername("lisi").password("456").authorities("p2").build());
+//        return manager;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
 //        //密码为明文方式
-        return NoOpPasswordEncoder.getInstance();
-//        return new BCryptPasswordEncoder();
+//        return NoOpPasswordEncoder.getInstance();
+        //密码的加密方式为 BCrypt 安全性高，因为每次生成的密码都不一样   与md5值不同，md5只有固定一个，一个对应一个
+        return new BCryptPasswordEncoder();
+    }
+
+    @Autowired
+    DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(daoAuthenticationProviderCustom);
     }
 
     //配置安全拦截机制
@@ -54,6 +65,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()//其它请求全部放行
                 .and()
                 .formLogin().successForwardUrl("/login-success");//登录成功跳转到/login-success
+    }
+
+    public static void main(String[] args) {
+        //原始密码  你输入的密码
+        String password = "111111";
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        for (int i = 0; i < 5; i++) {
+            //生成密码
+            String encode = bCryptPasswordEncoder.encode(password);
+            System.out.println(encode);
+            //校验密码，参数1是输入的明文 参数2是正确密码加密后的串
+            boolean matches = bCryptPasswordEncoder.matches(password, encode);
+            System.out.println(matches);
+        }
+
+
     }
 
 

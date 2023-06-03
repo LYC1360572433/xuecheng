@@ -11,6 +11,7 @@ import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
+import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,11 @@ public class CourseBaseInfoController {
         //获取当前用户的身份
         //获取上下文 获取认证信息 获取身份
         //底层使用thread local 把用户身份放在线程的变量中 线程里面的所有方法都可以拿到身份信息
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println(principal);
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        System.out.println(principal);
+
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        System.out.println(user.getUsername());
 
         CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseBaseInfo(courseId);
         return courseBaseInfo;
