@@ -31,15 +31,15 @@ public class XueChengPlusException extends RuntimeException {
         return errMessage;
     }
 
-    public static void cast(CommonError commonError){
+    public static void cast(CommonError commonError) {
         throw new XueChengPlusException(commonError.getErrMessage());
     }
 
-    public static void cast(String errMessage){
+    public static void cast(String errMessage) {
         throw new XueChengPlusException(errMessage);
     }
 
-    public static void cast(String errCode,String errMessage){
-        throw new XueChengPlusException(errCode,errMessage);
+    public static void cast(String errCode, String errMessage) {
+        throw new XueChengPlusException(errCode, errMessage);
     }
 }

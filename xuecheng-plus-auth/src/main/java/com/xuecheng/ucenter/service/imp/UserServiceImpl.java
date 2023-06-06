@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
 
 /**
- * @description TODO
+ * @description 自定义UserDetailsService用来对接Spring Security，查询用户信息
  */
 @Component
 @Slf4j
@@ -30,18 +30,33 @@ public class UserServiceImpl implements UserDetailsService {
     @Autowired
     XcUserMapper xcUserMapper;//注入，查用户表
 
-    @Autowired
+    @Autowired//注入spring容器，从容器里根据beanname去找对应的bean
     ApplicationContext applicationContext;
 
     /**
-     * @param s 账号
+     * @param s  AuthParamsDto类型的json数据
      * @return org.springframework.security.core.userdetails.UserDetails
-     * @description 根据账号查询用户信息
+     * @description 根据账号查询用户信息  查询用户信息组成用户身份信息
      */
 
-    //传入的请求认证的参数就是AuthParamsDto模型类
+    //传入的请求认证的参数就是AuthParamsDto模型类  参数为json数据
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+
+//        XcUser user = xcUserMapper.selectOne(new LambdaQueryWrapper<XcUser>().eq(XcUser::getUsername, s));
+//        if(user==null){
+//            //返回空表示用户不存在
+//            return null;
+//        }
+//        //取出数据库存储的正确密码
+//        String password  =user.getPassword();
+//        //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
+//        String[] authorities= {"test"};
+//        //创建UserDetails对象,权限信息待实现授权功能时再向UserDetail中加入
+//        UserDetails userDetails = User.withUsername(user.getUsername()).password(password).authorities(authorities).build();
+//
+//        return userDetails;
+
         //将传入的json转成AuthParamsDto对象
         AuthParamsDto authParamsDto = null;
         try {
@@ -51,6 +66,7 @@ public class UserServiceImpl implements UserDetailsService {
             throw new RuntimeException("请求认证参数不符合要求");
         }
 
+        //认证方法
         //认证类型，有password，wx。。。
         String authType = authParamsDto.getAuthType();
 

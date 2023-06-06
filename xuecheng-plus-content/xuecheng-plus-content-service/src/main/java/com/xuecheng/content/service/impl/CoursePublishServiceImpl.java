@@ -160,7 +160,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         courseBaseMapper.updateById(courseBase);
     }
 
-    @Transactional//保证如果有插入课程发布表，就一定有插入消息表
+    @Transactional//开启本地事务，保证如果有插入课程发布表，就一定有插入消息表
     @Override
     public void publish(Long companyId, Long courseId) {
 
@@ -185,7 +185,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         //保存课程发布信息
         saveCoursePublish(courseId);
 
-        //保存消息表
+        //保存课程发布消息到消息表
         saveCoursePublishMessage(courseId);
 
         //删除课程预发布表对应记录
@@ -196,7 +196,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     public File generateCourseHtml(Long courseId) {
 
         //静态化文件
-        File htmlFile  = null;
+        File htmlFile = null;
 
         try {
             //配置freemarker
@@ -226,13 +226,13 @@ public class CoursePublishServiceImpl implements CoursePublishService {
             //将静态化内容输出到文件中
             InputStream inputStream = IOUtils.toInputStream(content);
             //创建静态化临时文件(用来接收生成的html页面)
-            htmlFile = File.createTempFile("course",".html");
-            log.debug("课程静态化，生成静态文件:{}",htmlFile.getAbsolutePath());
+            htmlFile = File.createTempFile("course", ".html");
+            log.debug("课程静态化，生成静态文件:{}", htmlFile.getAbsolutePath());
             //输出流
             FileOutputStream outputStream = new FileOutputStream(htmlFile);
             IOUtils.copy(inputStream, outputStream);
         } catch (Exception e) {
-            log.error("课程页面静态化异常:{},课程id:{}",e,courseId );
+            log.error("课程页面静态化异常:{},课程id:{}", e, courseId);
             XueChengPlusException.cast("课程静态化异常");
         }
         return htmlFile;
@@ -244,9 +244,9 @@ public class CoursePublishServiceImpl implements CoursePublishService {
             //将file类型转成MultipartFile
             MultipartFile multipartFile = MultipartSupportConfig.getMultipartFile(file);
             //远程调用得到返回值
-            String course = mediaServiceClient.uploadFile(multipartFile, "course/"+courseId+".html");
-            if(course==null){
-                log.debug("远程调用走降级逻辑得到上传的结果为null，课程id:{}",courseId);
+            String course = mediaServiceClient.uploadFile(multipartFile, "course/" + courseId + ".html");
+            if (course == null) {
+                log.debug("远程调用走降级逻辑得到上传的结果为null，课程id:{}", courseId);
                 XueChengPlusException.cast("上传静态文件异常");
             }
         } catch (Exception e) {
@@ -270,7 +270,9 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         CoursePublish coursePublish = new CoursePublish();
         //拷贝到课程发布对象
         BeanUtils.copyProperties(coursePublishPre, coursePublish);
+        //设置发布状态为 已发布
         coursePublish.setStatus("203002");
+        //根据课程id去课程发布表里面查询该课程
         CoursePublish coursePublishUpdate = coursePublishMapper.selectById(courseId);
         if (coursePublishUpdate == null) {
             //如果课程发布表没有该对象，则插入
@@ -281,7 +283,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         }
         //更新课程基本表的发布状态
         CourseBase courseBase = courseBaseMapper.selectById(courseId);
-        courseBase.setStatus("203002");
+        courseBase.setStatus("203002");//已发布
         courseBaseMapper.updateById(courseBase);
     }
 
@@ -291,9 +293,12 @@ public class CoursePublishServiceImpl implements CoursePublishService {
      * @description 保存消息表记录
      */
     private void saveCoursePublishMessage(Long courseId) {
+        //todo：？？？
         MqMessage mqMessage = mqMessageService.addMessage("course_publish", String.valueOf(courseId), null, null);
         if (mqMessage == null) {
-            XueChengPlusException.cast(CommonError.UNKOWN_ERROR);
+//            XueChengPlusException.cast(CommonError.UNKOWN_ERROR);
+            XueChengPlusException.cast("保存消息表记录失败！");
+
         }
     }
 }

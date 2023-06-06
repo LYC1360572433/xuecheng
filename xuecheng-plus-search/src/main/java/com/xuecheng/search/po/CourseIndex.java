@@ -8,11 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * <p>
  * 课程索引信息
- * </p>
- *
- * @author itcast
  */
 @Data
 public class CourseIndex implements Serializable {
@@ -71,7 +67,6 @@ public class CourseIndex implements Serializable {
     private String stName;
 
 
-
     /**
      * 课程等级
      */
@@ -95,7 +90,7 @@ public class CourseIndex implements Serializable {
     /**
      * 发布时间
      */
-    @JSONField(format="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createDate;
 

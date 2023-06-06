@@ -30,9 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     //配置用户信息服务
 
-
 //    @Bean
 //    public UserDetailsService userDetailsService() {
+    //硬代码
 //        //这里配置用户信息,这里暂时使用这种方式将用户存储在内存中   以后是存在数据库里面
 //        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
 //        manager.createUser(User.withUsername("zhangsan").password("123").authorities("p1").build());
@@ -40,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //        return manager;
 //    }
 
+    //密码格式器
     @Bean
     public PasswordEncoder passwordEncoder() {
 //        //密码为明文方式
@@ -48,6 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    //将自己重写的类，注入进去，替换原框架的类
     @Autowired
     DaoAuthenticationProviderCustom daoAuthenticationProviderCustom;
 

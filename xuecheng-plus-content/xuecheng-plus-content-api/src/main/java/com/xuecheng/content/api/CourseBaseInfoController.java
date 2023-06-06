@@ -57,12 +57,11 @@ public class CourseBaseInfoController {
     @ApiOperation("根据课程id查询接口")
     @GetMapping("/course/{courseId}")
     public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId){
-        //令牌访问的是这个接口
         //获取当前用户的身份
         //获取上下文 获取认证信息 获取身份
         //底层使用thread local 把用户身份放在线程的变量中 线程里面的所有方法都可以拿到身份信息
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        System.out.println(principal);
+//        System.out.println("--------------" + principal);
 
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         System.out.println(user.getUsername());

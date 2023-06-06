@@ -1,16 +1,17 @@
-### 授权码模式
-### 第一步申请授权码(浏览器请求)/oauth/authorize?client_id=c1&response_type=code&scope=all&redirect_uri=http://www.51xuecheng.cn
+### 授权码模式  浏览器向认证服务申请授权码 然后再根据授权码 申请令牌
+POST {{auth_host}}/auth/oauth/authorize?client_id=c1&response_type=code&scope=all&redirect_uri=http://www.51xuecheng.cn
+
 ### 第二步申请令牌
-POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=authorization_code&code=7sXdgh&redirect_uri=http://www.51xuecheng.cn
+POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=authorization_code&code=授权码&redirect_uri=http://www.51xuecheng.cn
 
-
-### 密码模式(只能账号密码)
-POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username=t1&password=111111
+### 密码模式(只能账号密码) 直接申请令牌
+POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username=zhangsan&password=123
 
 ###校验jwt令牌
-POST {{auth_host}}/auth/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJ7XCJjb21wYW55SWRcIjpcIjEyMzIxNDE0MjVcIixcImNyZWF0ZVRpbWVcIjpcIjIwMjItMDktMjhUMDg6MzI6MDNcIixcImlkXCI6XCI1MlwiLFwibmFtZVwiOlwiTeiAgeW4iFwiLFwic2V4XCI6XCIxXCIsXCJzdGF0dXNcIjpcIlwiLFwidXNlcm5hbWVcIjpcInQxXCIsXCJ1dHlwZVwiOlwiMTAxMDAyXCJ9Iiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTY4NTc3MTc0MywiYXV0aG9yaXRpZXMiOlsidGVzdCJdLCJqdGkiOiJjZTJjNzQzMC0yMWY1LTQzMTMtYjE1Yi05YWI0ZTk1ZDUwODAiLCJjbGllbnRfaWQiOiJYY1dlYkFwcCJ9.5H-8kVvtK-IkHInT0h0_VJ5SAQZxtjK1f1rg9mMub8M
-##3
+POST {{auth_host}}/auth/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJ0MSIsInNjb3BlIjpbImFsbCJdLCJleHAiOjE2ODYwNjAwNzksImF1dGhvcml0aWVzIjpbInRlc3QiXSwianRpIjoiY2M2M2Y1MzktZjMzOS00YTZhLTg1MjItMjhkMDcwNmU4ODc5IiwiY2xpZW50X2lkIjoiWGNXZWJBcHAifQ.WYgSgAdzzS7NoioKD7BEFvop2SoRK652sg9sBn2EBKM
 
 
+################扩展认证请求参数后######################
 ### 密码模式，请求AuthParamsDto参数     里面是字符串  username对应loadUserByUsername的参数
 POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username={"username":"t1","password":"111111","authType":"password"}
+

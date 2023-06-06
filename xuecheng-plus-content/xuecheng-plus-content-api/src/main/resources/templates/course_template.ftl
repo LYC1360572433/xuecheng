@@ -7,13 +7,12 @@
     <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="/img/asset-favicon.ico">
+    <link rel="icon" href="/static/img/asset-favicon.ico">
     <title>学成在线-${model.courseBase.name}</title>
 
     <link rel="stylesheet" href="/static/plugins/normalize-css/normalize.css" />
-    <link rel="stylesheet" href="/plugins/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/page-learing-article.css" />
-    <script  src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/page-learing-article.css" />
 </head>
 
 <body data-spy="scroll" data-target="#articleNavbar" data-offset="150">
@@ -625,7 +624,7 @@
                 </div>
             </div>
             <div class="fact-pic">实际支付: <span>￥${model.courseBase.price!''}元</span></div>
-            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#" @click.prevent="aliPay()">支付宝支付</a><a href="#" @click.prevent="querypayresult()">支付完成</a><a href="#" @click.prevent="startLearngin()">试学</a></div>
+            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#" @click.prevent="aliPay()">支付宝支付</a><a href="#" @click.prevent="startLearngin()">试学</a></div>
         </div>
         <!--支付弹窗- end -->
         <div class="popup-comment-box">

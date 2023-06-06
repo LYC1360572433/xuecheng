@@ -21,6 +21,7 @@ import javax.annotation.Resource;
  */
  @Configuration
  @EnableAuthorizationServer
+ //需要该注解，并且该类需要继承AuthorizationServerConfigurerAdapter来配置OAuth2.0 授权服务器
  public class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
 
   @Resource(name="authorizationServerTokenServicesCustom")
@@ -47,7 +48,7 @@ import javax.annotation.Resource;
   }
 
 
-  //令牌端点的访问配置
+  //用来配置令牌（token）的访问端点和令牌服务(token services)。
   @Override
   public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
    endpoints
@@ -56,7 +57,7 @@ import javax.annotation.Resource;
            .allowedTokenEndpointRequestMethods(HttpMethod.POST);
   }
 
-  //令牌端点的安全配置
+  //用来配置令牌端点的安全约束
   @Override
   public void configure(AuthorizationServerSecurityConfigurer security){
    security

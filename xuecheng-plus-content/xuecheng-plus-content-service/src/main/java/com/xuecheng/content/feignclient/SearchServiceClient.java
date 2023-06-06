@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 
+/**
+ * @description 搜索服务远程接口
+ */
 @FeignClient(value = "search",fallbackFactory = SearchServiceClientFallbackFactory.class)
 public interface SearchServiceClient {
 

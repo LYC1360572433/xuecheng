@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
  * 课程发布任务类
  */
 
+//要使用message-sdk的话，需要在该工程添加message-sdk依赖
+//实现里面的抽象类，重写execute方法
 
 @Slf4j
 @Component

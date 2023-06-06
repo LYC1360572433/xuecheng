@@ -13,13 +13,12 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 import java.util.Arrays;
 
 /**
- * @author Administrator
- * @version 1.0
+ * 令牌配置
  **/
 @Configuration
 public class TokenConfig {
 
-    String SIGNING_KEY = "mq123";
+    String SIGNING_KEY = "mq123";//jwt签名密钥,与认证服务保持一致
 
 
 //    @Bean
@@ -33,6 +32,7 @@ public class TokenConfig {
 
     @Bean
     public TokenStore tokenStore() {
+        //JWT令牌存储方案
         return new JwtTokenStore(accessTokenConverter());
     }
 

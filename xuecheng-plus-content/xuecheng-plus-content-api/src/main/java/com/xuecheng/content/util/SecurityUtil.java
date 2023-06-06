@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * @description 获取当前用户身份工具类
+ * @description 获取当前用户身份工具类  根据令牌获取当前用户信息
  */
 @Slf4j
 public class SecurityUtil {
@@ -22,7 +22,14 @@ public class SecurityUtil {
                 //取出用户身份信息
                 String principal = principalObj.toString();
                 //将json转成对象
-                XcUser user = JSON.parseObject(principal, XcUser.class);
+
+                XcUser user = null;
+                try {
+                    user = JSON.parseObject(principal, XcUser.class);
+                } catch (Exception e) {
+                    throw new RuntimeException("请求认证参数不符合要求");
+                }
+
                 return user;
             }
         } catch (Exception e) {

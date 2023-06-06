@@ -8,8 +8,7 @@ import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenCo
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 /**
- * @author Administrator
- * @version 1.0
+ * 令牌配置类
  **/
 @Configuration
 public class TokenConfig {

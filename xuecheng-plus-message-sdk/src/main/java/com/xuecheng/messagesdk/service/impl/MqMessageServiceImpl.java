@@ -16,11 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * <p>
- *  服务实现类
- * </p>
  *
- * @author itcast
  */
 @Slf4j
 @Service
