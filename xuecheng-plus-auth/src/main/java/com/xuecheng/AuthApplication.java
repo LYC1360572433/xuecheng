@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //开启feign，需要指定包。同一工程下，多个启动类 都标了该注解，就会有问题
-@EnableFeignClients(basePackages={"com.xuecheng.*.feignclient"})
+@EnableFeignClients(basePackages={"com.xuecheng.ucenter.feignclient"})
 @SpringBootApplication
 public class AuthApplication {
 
@@ -24,4 +24,9 @@ public class AuthApplication {
         SpringApplication.run(AuthApplication.class, args);
     }
 
+    @Bean
+    RestTemplate restTemplate(){
+        RestTemplate restTemplate = new RestTemplate(new OkHttp3ClientHttpRequestFactory());
+        return  restTemplate;
+    }
 }

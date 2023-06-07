@@ -63,8 +63,9 @@ public class CourseBaseInfoController {
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        System.out.println("--------------" + principal);
 
-        SecurityUtil.XcUser user = SecurityUtil.getUser();
-        System.out.println(user.getUsername());
+        //暂时注释，因为还没实现单点登录
+//        SecurityUtil.XcUser user = SecurityUtil.getUser();
+//        System.out.println(user.getUsername());
 
         CourseBaseInfoDto courseBaseInfo = courseBaseInfoService.getCourseBaseInfo(courseId);
         return courseBaseInfo;
