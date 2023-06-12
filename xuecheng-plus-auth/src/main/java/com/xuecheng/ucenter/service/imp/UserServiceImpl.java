@@ -2,9 +2,11 @@ package com.xuecheng.ucenter.service.imp;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.xuecheng.ucenter.mapper.XcMenuMapper;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.dto.XcUserExt;
+import com.xuecheng.ucenter.model.po.XcMenu;
 import com.xuecheng.ucenter.model.po.XcUser;
 import com.xuecheng.ucenter.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +19,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import springfox.documentation.spring.web.json.Json;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @description 自定义UserDetailsService用来对接Spring Security，查询用户信息
@@ -32,6 +37,9 @@ public class UserServiceImpl implements UserDetailsService {
 
     @Autowired//注入spring容器，从容器里根据beanname去找对应的bean
     ApplicationContext applicationContext;
+
+    @Autowired
+    XcMenuMapper xcMenuMapper;
 
     /**
      * @param s  AuthParamsDto类型的json数据
@@ -87,9 +95,25 @@ public class UserServiceImpl implements UserDetailsService {
      * @description 查询用户信息
      */
     public UserDetails getUserPrincipal(XcUserExt user) {
-        //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
+
         String[] authorities = {"p1"};
+
         String password = user.getPassword();
+
+        //用户权限,如果不加报Cannot pass a null GrantedAuthority collection
+        //根据用户id查询用户的权限
+        List<XcMenu> xcMenus = xcMenuMapper.selectPermissionByUserId(user.getId());
+
+        if (xcMenus.size()>0){
+            //一个用户可以有多个权限
+            List<String> permissions = new ArrayList<>();
+            xcMenus.forEach(m->{
+                //拿到了用户拥有的权限标识符
+                permissions.add(m.getCode());
+            });
+            //将permissions转成数组
+            authorities = permissions.toArray(new String[0]);
+        }
         //为了安全在令牌中不放密码
         user.setPassword(null);
         //将user对象转json

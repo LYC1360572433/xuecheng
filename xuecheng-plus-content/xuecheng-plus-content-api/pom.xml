@@ -16,11 +16,6 @@
             <artifactId>xuecheng-plus-content-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.xuecheng</groupId>
-            <artifactId>xuecheng-plus-content-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
         <!-- 内容管理微服务注册到nacos -->
         <!-- nacos注册中心依赖 -->
         <dependency>

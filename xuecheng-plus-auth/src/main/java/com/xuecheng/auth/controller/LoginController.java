@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PreDestroy;
 
 /**
- * @author Mr.M
- * @version 1.0
  * @description 测试controller
- * @date 2022/9/27 17:25
  */
 @Slf4j
 @RestController
@@ -49,7 +46,6 @@ public class LoginController {
     public String r2() {
         return "访问r2资源";
     }
-
 
 
 }

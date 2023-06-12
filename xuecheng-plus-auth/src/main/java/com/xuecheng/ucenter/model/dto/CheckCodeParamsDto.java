@@ -1,8 +1,6 @@
-package com.xuecheng.checkcode.model;
+package com.xuecheng.ucenter.model.dto;
 
 import lombok.Data;
-
-import java.util.Map;
 
 /**
  * @description 验证码生成参数类

@@ -1,6 +1,5 @@
 package com.xuecheng.checkcode.controller;
 
-import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.checkcode.model.CheckCodeParamsDto;
 import com.xuecheng.checkcode.model.CheckCodeResultDto;
 import com.xuecheng.checkcode.service.CheckCodeService;
@@ -8,11 +7,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * @description 验证码服务接口
@@ -21,8 +19,13 @@ import java.util.Map;
 @RestController
 public class CheckCodeController {
 
+    //指定bean名字
     @Resource(name = "PicCheckCodeService")
     private CheckCodeService picCheckCodeService;
+
+    //指定bean名字
+    @Resource(name = "CheckCodeByCellPhoneService")
+    private CheckCodeService CheckCodeByCellPhoneService;
 
 
     @ApiOperation(value = "生成验证信息", notes = "生成验证信息")
@@ -42,4 +45,12 @@ public class CheckCodeController {
         Boolean isSuccess = picCheckCodeService.verify(key, code);
         return isSuccess;
     }
+
+    @ApiOperation(value = "根据手机号生成验证信息", notes = "根据手机号生成验证信息")
+    @PostMapping(value = "/phone")
+    public CheckCodeResultDto generateCheckCodeByCellPhone(CheckCodeParamsDto checkCodeParamsDto) {
+        return CheckCodeByCellPhoneService.generate(checkCodeParamsDto);
+    }
+
+
 }

@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 微信扫码认证
+ * 微信扫码认证方式
  */
 @Slf4j
 @Service("wx_authservice")
@@ -37,13 +37,12 @@ public class WxAuthServiceImpl implements AuthService, WxAuthService {
     XcUserRoleMapper xcUserRoleMapper;
     @Autowired
     XcUserMapper xcUserMapper;
-    //和第三方对接，又不是使用网关，就用这个
     @Autowired
-    RestTemplate restTemplate;
+    RestTemplate restTemplate;//支持http请求的工具，和第三方对接，又不是使用网关，就用这个
     @Autowired
-    WxAuthServiceImpl currentPorxy;
+    WxAuthServiceImpl currentProxy;
 
-    //在微信开放平台，只要审核通过，就会给你appid和app密钥
+    //在微信开放平台，只要审核通过，就会给你appid和app密钥,相当于应用的id和密码
     //我们将其配在nacos上边
     @Value("${weixin.appid}")
     String appid;
@@ -69,7 +68,7 @@ public class WxAuthServiceImpl implements AuthService, WxAuthService {
             return null;
         }
         //保存用户信息到数据库
-        XcUser xcUser = currentPorxy.addWxUser(userinfo);
+        XcUser xcUser = currentProxy.addWxUser(userinfo);
 
         return xcUser;
     }
@@ -111,6 +110,7 @@ public class WxAuthServiceImpl implements AuthService, WxAuthService {
     }
 
     /**
+     * 通过code获取access_token
      * 携带授权码申请访问令牌,响应示例
      * https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code
      * 响应的内容如下：
@@ -135,7 +135,7 @@ public class WxAuthServiceImpl implements AuthService, WxAuthService {
 
         log.info("调用微信接口申请access_token, url:{}", wxUrl);
 
-        //远程调用url                                             url       请求方式           请求内容     响应内容类型：字符串
+        //远程调用url，相当于在浏览器发出url请求                      url       请求方式           请求内容     响应内容类型：字符串
         ResponseEntity<String> exchange = restTemplate.exchange(wxUrl, HttpMethod.POST, null, String.class);
 
         //获取响应的结果 body就是返回值，上面那些json数据

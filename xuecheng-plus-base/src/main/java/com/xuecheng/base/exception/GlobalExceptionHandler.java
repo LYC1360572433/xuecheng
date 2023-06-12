@@ -29,13 +29,19 @@ public class GlobalExceptionHandler {
         return new RestErrorResponse(e.getErrCode(),e.getErrMessage());
     }
 
-    //对项目的非自定义异常类型进行处理
+    //对项目的非自定义异常类型进行处理  总的异常，如果没被其它定义好的异常捕捉，就会到这里来
     @ResponseBody
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestErrorResponse exception(Exception e) {
         //记录异常日志
         log.error("【系统异常】{}",e.getMessage(),e);
+        //为了不引入spring security依赖，因为一旦引入，所有其它微服务都自动依赖spring security，因为当初让其它微服务都依赖base这个工程
+        if(e.getMessage().equals("不允许访问")){
+            return new RestErrorResponse("您没有权限操作此功能");
+        }
+
+
         //解析出异常信息
         return new RestErrorResponse(CommonError.UNKOWN_ERROR.getErrMessage());
     }

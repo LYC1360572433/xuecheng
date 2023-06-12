@@ -17,12 +17,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * @author Mr.M
- * @version 1.0
  * @description 图片验证码生成器
- * @date 2022/9/29 16:16
  */
-@Service("PicCheckCodeService")
+@Service("PicCheckCodeService")//该服务的名字
 public class PicCheckCodeServiceImpl extends AbstractCheckCodeService implements CheckCodeService {
 
 
@@ -51,6 +48,7 @@ public class PicCheckCodeServiceImpl extends AbstractCheckCodeService implements
 
     @Override
     public CheckCodeResultDto generate(CheckCodeParamsDto checkCodeParamsDto) {
+        //直接使用父类的方法
         GenerateResult generate = generate(checkCodeParamsDto, 4, "checkcode:", 300);
         String key = generate.getKey();
         String code = generate.getCode();

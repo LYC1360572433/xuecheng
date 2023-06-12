@@ -14,8 +14,10 @@ import com.xuecheng.content.service.CourseBaseInfoService;
 import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +30,7 @@ public class CourseBaseInfoController {
     CourseBaseInfoService courseBaseInfoService;
 
     @ApiOperation("课程查询接口")//swagger提供的api 方法注释
+    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/course/list")//@RequestBody(required = false) 参数可以不必填
     public PageResult<CourseBase> list(PageParams pageParams,@RequestBody(required = false) QueryCourseParamsDto queryCourseParamsDto){
         //测试接口的硬编码
@@ -38,7 +41,14 @@ public class CourseBaseInfoController {
         courseBases.add(courseBase);
         PageResult pageResult = new PageResult<CourseBase>(courseBases,10,1,10);*/
 
-        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
+        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(companyId,pageParams, queryCourseParamsDto);
 
         return courseBasePageResult;
     }

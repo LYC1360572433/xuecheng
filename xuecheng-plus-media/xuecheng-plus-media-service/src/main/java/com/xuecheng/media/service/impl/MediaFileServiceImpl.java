@@ -341,7 +341,6 @@ public class MediaFileServiceImpl implements MediaFileService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return RestResponse.success(false);//返回false，前端读到false的话就知道文件不存在了
         }
         return RestResponse.success(false);//返回false，前端读到false的话就知道文件不存在了
     }

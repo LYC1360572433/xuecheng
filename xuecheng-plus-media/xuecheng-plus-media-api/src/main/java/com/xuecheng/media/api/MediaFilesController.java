@@ -18,10 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * @author Mr.M
- * @version 1.0
  * @description 媒资文件管理接口
- * @date 2022/9/6 11:29
  */
 @Api(value = "媒资文件管理接口", tags = "媒资文件管理接口")
 @RestController
@@ -42,12 +39,12 @@ public class MediaFilesController {
     //consumes:限制方法处理指定Content-Type的http请求 前端传过来东西，后端就属于消费者
     //MediaType.MULTIPART_FORM_DATA_VALUE: 指定mediaType的一个类型
     //请求内容Content-Type: (复杂类型)multipart/form-data:需要在表单中进行文件上传时，就需要使用该格式
-    @RequestMapping(value = "/upload/coursefile",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @RequestMapping(value = "/upload/coursefile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     //@RequestPart:指定前端传过来的文件名称
     //用MultipartFile类型去接文件 MultipartFile是自带的类型 里面有前端传过来的一些文件数据
     //如果有objectName，就按这个去传；如果没有，就传到年月日
-    public UploadFileResultDto upload(@RequestPart("filedata")MultipartFile filedata,
-                                      @RequestParam(value= "objectName",required=false) String objectName) throws IOException {
+    public UploadFileResultDto upload(@RequestPart("filedata") MultipartFile filedata,
+                                      @RequestParam(value = "objectName", required = false) String objectName) throws IOException {
         //到这里已经从前端拿到文件了，存储在本地内存里面
         //准备上传文件的信息
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
@@ -65,7 +62,7 @@ public class MediaFilesController {
         //取出该文件的绝对路径
         String absolutePath = tempFile.getAbsolutePath();
         //调用service上传图片
-        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, absolutePath,objectName);
+        UploadFileResultDto uploadFileResultDto = mediaFileService.uploadFile(companyId, uploadFileParamsDto, absolutePath, objectName);
         return uploadFileResultDto;
     }
 }

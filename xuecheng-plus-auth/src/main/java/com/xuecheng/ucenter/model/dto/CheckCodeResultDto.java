@@ -1,4 +1,4 @@
-package com.xuecheng.checkcode.model;
+package com.xuecheng.ucenter.model.dto;
 
 import lombok.Data;
 
@@ -25,4 +25,6 @@ public class CheckCodeResultDto {
     private String aliasing;
 
     private String cellPhoneOrEmail;
+
+
 }
