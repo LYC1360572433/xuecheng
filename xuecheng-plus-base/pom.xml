@@ -67,6 +67,7 @@
             <artifactId>simplemagic</artifactId>
             <version>1.17</version>
         </dependency>
+        <!-- 生成二维码&识别组件 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

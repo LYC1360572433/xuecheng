@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.ucenter.feignclient.CheckCodeClient;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
+import com.xuecheng.ucenter.mapper.XcUserRoleMapper;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.model.po.XcUser;
+import com.xuecheng.ucenter.model.po.XcUserRole;
 import com.xuecheng.ucenter.service.FindPasswordAuthService;
 import com.xuecheng.ucenter.service.RegisterAuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,9 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
     @Autowired
     XcUserMapper xcUserMapper;
 
+    @Autowired
+    XcUserRoleMapper xcUserRoleMapper;
+
     @Override
     public void registerAuth(AuthParamsDto authParamsDto) {
         //用户输入的验证码
@@ -35,15 +40,15 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         String checkcodekey = authParamsDto.getCheckcodekey();
         //判断验证码是否正确
         Boolean verify = checkCodeClient.verify(checkcodekey, checkcode);
-        if (!verify){
-        XueChengPlusException.cast("验证码有误");
+        if (!verify) {
+            XueChengPlusException.cast("验证码有误");
         }
         //判断两次密码是否一致
         //获取第一次输入的密码
         String password = authParamsDto.getPassword();
         //获取第二次输入的确认密码
         String confirmpwd = authParamsDto.getConfirmpwd();
-        if (!confirmpwd.equals(password)){
+        if (!confirmpwd.equals(password)) {
             XueChengPlusException.cast("两次密码输入不一致");
         }
         //根据手机号和邮箱查询用户(所以默认一个手机号只能有一个用户)
@@ -51,28 +56,56 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         String cellphone = authParamsDto.getCellphone();
         String email = authParamsDto.getEmail();
         LambdaQueryWrapper<XcUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(XcUser::getCellphone,cellphone);
-        queryWrapper.eq(XcUser::getEmail,email);
+        queryWrapper.eq(XcUser::getCellphone, cellphone);
+        queryWrapper.eq(XcUser::getEmail, email);
         XcUser xcUser = xcUserMapper.selectOne(queryWrapper);
-        if (xcUser != null){
+        if (xcUser != null) {
             XueChengPlusException.cast("该用户已存在");
         }
+        //向用户表添加数据
+        xcUser = addUser(authParamsDto, confirmpwd);
+        //向用户角色关系表添加数据
+        addUserRole(xcUser);
+    }
+
+    /**
+     * 向用户角色关系表添加数据
+     * @param xcUser 用户
+     */
+    private void addUserRole(XcUser xcUser) {
+        //向用户角色关系表添加数据
+        XcUserRole xcUserRole = new XcUserRole();
+        BeanUtils.copyProperties(xcUser, xcUserRole);
+        xcUserRole.setRoleId("17");//角色id 学生用户 为17
+        int insert = xcUserRoleMapper.insert(xcUserRole);
+        if (insert < 0) {
+            XueChengPlusException.cast("新增用户角色关系失败");
+        }
+        XueChengPlusException.cast("200","注册成功");
+    }
+
+    /**
+     * 向用户表添加数据
+     * @param authParamsDto
+     * @param confirmpwd
+     */
+    private XcUser addUser(AuthParamsDto authParamsDto, String confirmpwd) {
         //如果没找到用户，则添加数据
-        XcUser xcUser1 = new XcUser();
-        BeanUtils.copyProperties(authParamsDto,xcUser1);
-        xcUser1.setName("学生用户");
-        xcUser1.setUtype("101001");//不知道是什么，数据字典里面没查到
-        xcUser1.setStatus("1");//用户状态
+        XcUser xcUser = new XcUser();
+        BeanUtils.copyProperties(authParamsDto, xcUser);
+        xcUser.setName("学生用户");
+        xcUser.setUtype("101001");//不知道是什么，数据字典里面没查到
+        xcUser.setStatus("1");//用户状态
 //        xcUser1.setId("1");
-        xcUser1.setCreateTime(LocalDateTime.now());
+        xcUser.setCreateTime(LocalDateTime.now());
         //将密码转为BCrypt形式 存入数据库
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encode = bCryptPasswordEncoder.encode(confirmpwd);
-        xcUser1.setPassword(encode);
-        int i = xcUserMapper.insert(xcUser1);
-        if (i < 0){
-            XueChengPlusException.cast("注册用户失败");
+        xcUser.setPassword(encode);
+        int i = xcUserMapper.insert(xcUser);
+        if (i < 0) {
+            XueChengPlusException.cast("新增用户失败");
         }
-        XueChengPlusException.cast("200","注册用户成功");
+        return xcUser;
     }
 }

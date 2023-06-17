@@ -1,21 +1,16 @@
 package com.xuecheng.content.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.CommonError;
 import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.content.config.MultipartSupportConfig;
 import com.xuecheng.content.feignclient.MediaServiceClient;
-import com.xuecheng.content.mapper.CourseBaseMapper;
-import com.xuecheng.content.mapper.CourseMarketMapper;
-import com.xuecheng.content.mapper.CoursePublishMapper;
-import com.xuecheng.content.mapper.CoursePublishPreMapper;
+import com.xuecheng.content.mapper.*;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.CoursePreviewDto;
 import com.xuecheng.content.model.dto.TeachplanDto;
-import com.xuecheng.content.model.po.CourseBase;
-import com.xuecheng.content.model.po.CourseMarket;
-import com.xuecheng.content.model.po.CoursePublish;
-import com.xuecheng.content.model.po.CoursePublishPre;
+import com.xuecheng.content.model.po.*;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import com.xuecheng.content.service.CoursePublishService;
 import com.xuecheng.content.service.TeachplanService;
@@ -73,6 +68,12 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     @Autowired
     MediaServiceClient mediaServiceClient;//远程调用媒资服务的接口
 
+    @Autowired
+    TeachplanMapper teachplanMapper;
+
+    @Autowired
+    CourseTeacherMapper courseTeacherMapper;
+
 
     @Override
     public CoursePreviewDto getCoursePreviewInfo(Long courseId) {
@@ -83,9 +84,15 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         //课程计划信息
         List<TeachplanDto> teachplanTree = teachplanService.findTeachplanTree(courseId);
 
+        //教资信息
+        LambdaQueryWrapper<CourseTeacher> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(CourseTeacher::getCourseId,courseId);
+        CourseTeacher courseTeacher = courseTeacherMapper.selectOne(queryWrapper);
+
         CoursePreviewDto coursePreviewDto = new CoursePreviewDto();
         coursePreviewDto.setCourseBase(courseBaseInfo);
         coursePreviewDto.setTeachplans(teachplanTree);
+        coursePreviewDto.setCourseTeacher(courseTeacher);
         return coursePreviewDto;
     }
 
@@ -300,5 +307,15 @@ public class CoursePublishServiceImpl implements CoursePublishService {
             XueChengPlusException.cast("保存消息表记录失败！");
 
         }
+    }
+
+    /**
+     * 根据课程id查询课程发布信息
+     * @param courseId
+     * @return
+     */
+    public CoursePublish getCoursePublish(Long courseId){
+        CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
+        return coursePublish ;
     }
 }

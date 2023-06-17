@@ -2,3 +2,9 @@
 GET {{search_host}}/search/course/list?pageNo=1&keywords=spring
 Content-Type: application/json
 
+###
+POST http://192.168.101.1:63030/orders/paynotify
+
+###
+GET {{gateway_host}}/learning/mycoursetable?courseType=&sortType=&expiresType=
+

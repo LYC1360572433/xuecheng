@@ -25,7 +25,7 @@
     <div class="banner-info">
         <div class="banner-left">
             <p>${model.courseBase.mtName!''}<span>\ ${model.courseBase.stName!''}</span></p>
-            <p class="tit">${model.courseBase.name}</p>
+            <p class="tit">${model.courseBase.name!''}</p>
             <p class="pic">
                 <#if model.courseBase.charge=='201000'>
                     <span class="new-pic">免费</span>
@@ -58,9 +58,9 @@
         </div>
         <div class="banner-rit">
             <p>
-                <a href="http://www.51xuecheng.cn/course/preview/learning.html?id=${model.courseBase.id}" target="_blank">
+                <a href="http://www.51xuecheng.cn/course/preview/learning.html?id=${model.courseBase.id!''}" target="_blank">
                     <#if model.courseBase.pic??>
-                        <img src="http://file.51xuecheng.cn${model.courseBase.pic}" alt="" width="270" height="156">
+                        <img src="http://file.51xuecheng.cn${model.courseBase.pic!''}" alt="" width="270" height="156">
                     <#else>
                         <img src="/static/img/widget-video.png" alt="" width="270" height="156">
                     </#if>
@@ -106,11 +106,11 @@
                         <div class="content-com course">
                             <div class="title"><span>课程制作</span></div>
                             <div class="cont">
-                                <div class="img-box"><img src="/static/img/widget-myImg.jpg" alt=""></div>
+                                <div class="img-box"><img src="http://file.51xuecheng.cn${model.courseTeacher.photograph!""}" alt="" width="100" height="156"></div>
                                 <div class="info-box">
-                                    <p class="name">教学方：<em>XX老师</em></p>
+                                    <p class="info">${model.courseTeacher.position!''}</p>
                                     <!-- <p class="lab">高级前端开发工程师 10年开发经验</p>-->
-                                    <p class="info">JavaEE开发与教学多年，精通JavaEE技术体系，对流行框架JQuery、DWR、Struts1/2，Hibernate，Spring，MyBatis、JBPM、Lucene等有深入研究。授课逻辑严谨，条理清晰，注重学生独立解决问题的能力。</p>
+<#--                                    <p class="info">JavaEE开发与教学多年，精通JavaEE技术体系，对流行框架JQuery、DWR、Struts1/2，Hibernate，Spring，MyBatis、JBPM、Lucene等有深入研究。授课逻辑严谨，条理清晰，注重学生独立解决问题的能力。</p>-->
                                     <!-- <p><span>难度等级</span>中级</p>
                                      <p><span>课程时长</span>8-16小时/周，共4周</p>
                                      <p><span>如何通过</span>通过所有的作业及考核，作业共4份，考核为一次终极考核</p>
@@ -176,11 +176,11 @@
                     <div class="content">
                         <#list model.teachplans as firstNode>
                             <div class="item">
-                                <div class="title act"><i class="i-chevron-top"></i>${firstNode.pname}<span class="time">x小时</span></div>
+                                <div class="title act"><i class="i-chevron-top"></i>${firstNode.pname!''}<span class="time">x小时</span></div>
                                 <div class="drop-down" style="height: 260px;">
                                     <ul class="list-box">
                                         <#list firstNode.teachPlanTreeNodes as secondNode>
-                                            <li><a href="http://www.51xuecheng.cn/course/preview/learning.html?id=${model.courseBase.id}&chapter=${secondNode.teachplanMedia.teachplanId!''}" target="_blank">${secondNode.pname}</a></li>
+                                            <li><a href="http://www.51xuecheng.cn/course/preview/learning.html?id=${model.courseBase.id!''}&chapter=${secondNode.teachplanMedia.teachplanId!''}" target="_blank">${secondNode.pname!''}</a></li>
                                         </#list>
                                     </ul>
                                 </div>
@@ -602,7 +602,7 @@
         <div class="mask"></div>
         <!--欢迎访问课程弹窗- start -->
         <div class="popup-course-box">
-            <div class="title">${model.courseBase.name} <span class="close-popup-course-box">×</span></div>
+            <div class="title">${model.courseBase.name!''} <span class="close-popup-course-box">×</span></div>
             <div class="content">
                 <p>欢迎学习本课程，本课程免费您可以立即学习，也可加入我的课程表享受更优质的服务。</p>
                 <p><a href="#" @click.prevent="addCourseTable()">加入我的课程表</a>  <a href="#" @click.prevent="startLearngin()">立即学习</a></p>
@@ -613,18 +613,18 @@
         <div class="mask"></div>
         <!--支付弹窗- start -->
         <div class="popup-pay-box">
-            <div class="title">${model.courseBase.name} <span class="close-popup-pay-box">×</span></div>
+            <div class="title">${model.courseBase.name!''} <span class="close-popup-pay-box">×</span></div>
             <div class="content">
                 <img :src="qrcode" width="200" height="200" alt="请点击支付宝支付按钮，并完成扫码支付。"/>
 
                 <div class="info">
-                    <p class="info-tit">${model.courseBase.name}<span>课程有效期:${model.courseBase.validDays}天</span></p>
+                    <p class="info-tit">${model.courseBase.name!''}<span>课程有效期:${model.courseBase.validDays!''}天</span></p>
                     <p class="info-pic">课程价格 : <span>￥${model.courseBase.originalPrice!''}元</span></p>
                     <p class="info-new-pic">优惠价格 : <span>￥${model.courseBase.price!''}元</span></p>
                 </div>
             </div>
             <div class="fact-pic">实际支付: <span>￥${model.courseBase.price!''}元</span></div>
-            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#" @click.prevent="aliPay()">支付宝支付</a><a href="#" @click.prevent="startLearngin()">试学</a></div>
+            <div class="go-pay"><a href="#" @click.prevent="wxPay()">微信支付</a><a href="#" @click.prevent="aliPay()">支付宝支付</a><a href="#" @click.prevent="querypayresult()">支付完成</a><a href="#" @click.prevent="startLearngin()">试学</a></div>
         </div>
         <!--支付弹窗- end -->
         <div class="popup-comment-box">
@@ -636,6 +636,6 @@
     <!--#include virtual="/include/footer.html"-->
     <!--底部版权-->
 </div>
-<script>var courseId = "${model.courseBase.id}";var courseCharge = "${model.courseBase.charge}"</script>
+<script>var courseId = "${model.courseBase.id!''}";var courseCharge = "${model.courseBase.charge!''}"</script>
 <!--#include virtual="/include/course_detail_dynamic.html"-->
 </body>
