@@ -81,10 +81,10 @@ public class OrderController {
         AlipayClient client = new DefaultAlipayClient(AlipayConfig.URL, APP_ID, APP_PRIVATE_KEY, AlipayConfig.FORMAT, AlipayConfig.CHARSET, ALIPAY_PUBLIC_KEY, AlipayConfig.SIGNTYPE);//获得初始化的AlipayClient
         AlipayTradeWapPayRequest alipayRequest = new AlipayTradeWapPayRequest();//创建API对应的request
 //        alipayRequest.setReturnUrl("http://domain.com/CallBack/return_url.jsp");
-//        alipayRequest.setNotifyUrl("http://www.51xuecheng.cn/api/orders/paynotify");//在公共参数中设置回跳和通知地址
-//        alipayRequest.setNotifyUrl("http://tjxt-user-t.itheima.net/xuecheng/orders/paynotify");//在公共参数中设置回跳和通知地址
-//        alipayRequest.setNotifyUrl("http://192.168.101.1:63030/orders/paynotify");//在公共参数中设置回跳和通知地址
-        alipayRequest.setNotifyUrl("http://p3vhn3.natappfree.cc/orders/paynotify");//在公共参数中设置回跳和通知地址
+//        alipayRequest.setNotifyUrl("http://www.51xuecheng.cn/api/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
+//        alipayRequest.setNotifyUrl("http://tjxt-user-t.itheima.net/api/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
+//        alipayRequest.setNotifyUrl("http://192.168.101.1:63030/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
+        alipayRequest.setNotifyUrl("http://7gknx4.natappfree.cc/orders/paynotify");//在公共参数中设置回跳和通知地址 可以 但还是有问题
         alipayRequest.setBizContent("{" +
                 " \"out_trade_no\":\"" + payRecord.getPayNo() + "\"," +
                 " \"total_amount\":\"" + payRecord.getTotalPrice() + "\"," +

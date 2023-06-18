@@ -6,5 +6,14 @@ Content-Type: application/json
 POST http://192.168.101.1:63030/orders/paynotify
 
 ###
+POST http://tjxt-user-t.itheima.net/api/orders/paynotify
+
+###
+POST http://7gknx4.natappfree.cc/orders/paynotify
+
+###
+POST http://www.51xuecheng.cn/api/orders/paynotify
+
+###
 GET {{gateway_host}}/learning/mycoursetable?courseType=&sortType=&expiresType=
 
