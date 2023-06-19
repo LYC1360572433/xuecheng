@@ -4,3 +4,6 @@ POST {{checkcode_host}}/checkcode/phone?param1=11
 
 ### 校验验证码
 POST {{checkcode_host}}/checkcode/verify?key=checkcode:98b243fb06bb4dcda470658b1e1d5b0c&code=LSJ2
+
+### 申请验证码
+POST 192.168.101.65:63075/checkcode/pic
