@@ -1,5 +1,6 @@
 package com.xuecheng.auth.controller;
 
+import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.service.FindPasswordAuthService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,7 @@ public class FindPasswordController {
     FindPasswordAuthService findPasswordAuthService;
 
     @RequestMapping("/findpassword")
-    public void findPassword(@RequestBody AuthParamsDto authParamsDto) {
-        findPasswordAuthService.findPasswordAuth(authParamsDto);
+    public RestResponse findPassword(@RequestBody AuthParamsDto authParamsDto) {
+        return findPasswordAuthService.findPasswordAuth(authParamsDto);
     }
 }

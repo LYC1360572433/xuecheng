@@ -84,7 +84,7 @@ public class OrderController {
 //        alipayRequest.setNotifyUrl("http://www.51xuecheng.cn/api/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
 //        alipayRequest.setNotifyUrl("http://tjxt-user-t.itheima.net/api/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
 //        alipayRequest.setNotifyUrl("http://192.168.101.1:63030/orders/paynotify");//在公共参数中设置回跳和通知地址 不可以
-        alipayRequest.setNotifyUrl("http://7gknx4.natappfree.cc/orders/paynotify");//在公共参数中设置回跳和通知地址 可以 但还是有问题
+        alipayRequest.setNotifyUrl("http://izt6fk.natappfree.cc/orders/paynotify");//在公共参数中设置回跳和通知地址 可以 但还是有问题
         alipayRequest.setBizContent("{" +
                 " \"out_trade_no\":\"" + payRecord.getPayNo() + "\"," +
                 " \"total_amount\":\"" + payRecord.getTotalPrice() + "\"," +

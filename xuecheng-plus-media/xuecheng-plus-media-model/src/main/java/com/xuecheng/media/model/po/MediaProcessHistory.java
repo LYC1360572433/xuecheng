@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ * 历史任务表 成功的 才写到这个表
  * </p>
  *
  * @author itcast

@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ * 任务待处理表
  * </p>
  *
  * @author itcast

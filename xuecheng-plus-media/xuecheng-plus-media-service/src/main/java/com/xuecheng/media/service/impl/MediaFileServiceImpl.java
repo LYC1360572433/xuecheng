@@ -376,7 +376,10 @@ public class MediaFileServiceImpl implements MediaFileService {
         //找到所有的分块文件调用minio的sdk进行文件合并
         List<ComposeSource> sources = Stream.iterate(0, i -> ++i)//起始值为0，每次生成一个i+1的数
                 .limit(chunkTotal)//截断流的长度
-                .map(i -> ComposeSource.builder().bucket(bucket_video).object(chunkFileFolderPath + i).build()).collect(Collectors.toList());
+                .map(i -> ComposeSource.builder()
+                        .bucket(bucket_video)
+                        .object(chunkFileFolderPath + i)
+                        .build()).collect(Collectors.toList());
 
         //指定合并后的objectName等信息
         ComposeObjectArgs composeObjectArgs = ComposeObjectArgs.builder()
@@ -429,12 +432,12 @@ public class MediaFileServiceImpl implements MediaFileService {
     private void clearChunkFiles(String chunkFileFolderPath,int chunkTotal){
 
         try {
-            List<DeleteObject> deleteObjects = Stream.iterate(0, i -> ++i)
+            Iterable<DeleteObject> deleteObjects = Stream.iterate(0, i -> ++i)
                     .limit(chunkTotal)
                     .map(i -> new DeleteObject(chunkFileFolderPath + i))
                     .collect(Collectors.toList());
 
-            RemoveObjectsArgs removeObjectsArgs = RemoveObjectsArgs.builder().bucket("video").objects(deleteObjects).build();
+            RemoveObjectsArgs removeObjectsArgs = RemoveObjectsArgs.builder().bucket(bucket_video).objects(deleteObjects).build();
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(removeObjectsArgs);
             //需要遍历结果才能成功
             results.forEach(r->{

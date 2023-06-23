@@ -121,7 +121,7 @@ public class VideoTask {
                     String result = videoUtil.generateMp4();
                     if (!result.equals("success")) {
                         log.debug("视频转码失败,原因:{},bucket:{},objectName:{}", result, bucket, objectName);
-                        mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, result);
+                        mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "视频转码失败" + result);
                         return;
                     }
                     //视频转码成功

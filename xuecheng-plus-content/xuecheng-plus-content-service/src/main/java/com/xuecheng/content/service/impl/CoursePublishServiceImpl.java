@@ -21,8 +21,12 @@ import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.redisson.Redisson;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -35,6 +39,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @description 课程发布相关接口实现
@@ -74,6 +81,11 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     @Autowired
     CourseTeacherMapper courseTeacherMapper;
 
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Autowired
+    RedissonClient redissonClient;
 
     @Override
     public CoursePreviewDto getCoursePreviewInfo(Long courseId) {
@@ -86,7 +98,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
 
         //教资信息
         LambdaQueryWrapper<CourseTeacher> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(CourseTeacher::getCourseId,courseId);
+        queryWrapper.eq(CourseTeacher::getCourseId, courseId);
         CourseTeacher courseTeacher = courseTeacherMapper.selectOne(queryWrapper);
 
         CoursePreviewDto coursePreviewDto = new CoursePreviewDto();
@@ -311,11 +323,126 @@ public class CoursePublishServiceImpl implements CoursePublishService {
 
     /**
      * 根据课程id查询课程发布信息
+     *
      * @param courseId
      * @return
      */
-    public CoursePublish getCoursePublish(Long courseId){
+    public CoursePublish getCoursePublish(Long courseId) {
         CoursePublish coursePublish = coursePublishMapper.selectById(courseId);
-        return coursePublish ;
+        return coursePublish;
+    }
+
+    //解决缓存穿透和雪崩方案
+/*    public CoursePublish getCoursePublishCache(Long courseId) {
+
+        //解决缓存穿透方案2：缓存预热 布隆过滤器
+
+        //查询缓存 redis key value结构   key命名规则  存进redis是一个json 现在返回的object
+        Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+        //第一次查缓存 查不到 后面从数据库查询 然后添加到缓存 以后就查得到了
+        if (jsonObj != null) {
+            //缓存有的话 将对象转为String
+            String jsonString = jsonObj.toString();
+            //缓存value为null值 “null”
+            if ("null".equals(jsonString))
+                return null;
+//            System.out.println("=================从缓存查=================");
+            //再转成json
+            CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+            return coursePublish;
+        } else {
+            System.out.println("从数据库查询...");
+            //从数据库查询
+            CoursePublish coursePublish = getCoursePublish(courseId);
+            //解决缓存穿透方案3：缓存空值的话 需要设置过期时间
+            //解决缓存雪崩：过期时间加随机数
+            redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish),300+new Random().nextInt(100), TimeUnit.SECONDS);
+            //if (coursePublish != null) {
+//                redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish));
+//            }
+            return coursePublish;
+        }
+    }
+}*/
+    /*//使用同步锁解决缓存击穿
+    public CoursePublish getCoursePublishCache(Long courseId) {
+        //从缓存中查
+        Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+        if (jsonObj != null) {
+            //缓存有的话 将对象转为String
+            String jsonString = jsonObj.toString();
+            //缓存value为null值 “null”
+            if ("null".equals(jsonString))
+                return null;
+//            System.out.println("=================从缓存查=================");
+            //再转成json
+            CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+            return coursePublish;
+        } else {
+            //this是指service实例 默认单例 多个线程过来 共享该实例
+            //括号里面不能用new object() 因为多个线程没有使用同一个锁对象
+            synchronized (this) {
+                //再次查询一次缓存
+                jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+                if (jsonObj != null) {
+                    //缓存有的话 将对象转为String
+                    String jsonString = jsonObj.toString();
+                    if ("null".equals(jsonString))
+                        return null;
+                    CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+                    return coursePublish;
+                }
+                System.out.println("==查询数据库==");
+                //从数据库查询
+                CoursePublish coursePublish = getCoursePublish(courseId);
+                redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish), 300 + new Random().nextInt(100), TimeUnit.SECONDS);
+                return coursePublish;
+            }
+        }
+    }*/
+
+
+    //使用redisson实现分布式锁
+    public CoursePublish getCoursePublishCache(Long courseId) {
+        Object jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+        if (jsonObj != null) {
+            String jsonString = jsonObj.toString();
+            if ("null".equals(jsonString))
+                return null;
+//            System.out.println("=================从缓存查=================");
+            CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+            return coursePublish;
+        } else {
+            //查询同一门课，只查一次数据库  锁的id  每个课程都有一个锁
+            RLock lock = redissonClient.getLock("coursequerylock:" + courseId);
+            //获取分布式锁
+            lock.lock();
+            //拿到锁 执行try
+            try {
+                jsonObj = redisTemplate.opsForValue().get("course:" + courseId);
+                if (jsonObj != null) {
+                    String jsonString = jsonObj.toString();
+                    if ("null".equals(jsonString))
+                        return null;
+                    CoursePublish coursePublish = JSON.parseObject(jsonString, CoursePublish.class);
+                    return coursePublish;
+                }
+                System.out.println("==查询数据库==");
+                /*try {
+                    //手动延迟，测试锁的续期功能
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }*/
+                CoursePublish coursePublish = getCoursePublish(courseId);
+                redisTemplate.opsForValue().set("course:" + courseId, JSON.toJSONString(coursePublish), 300 + new Random().nextInt(100), TimeUnit.SECONDS);
+                return coursePublish;
+            }finally {
+                //只要执行try，一定会执行finally
+                //释放锁 不管key过不过期
+                //redisson的好处就是 本来这里要做判断 和 调用lua脚本 ，它全给我们封装好了
+                lock.unlock();
+            }
+        }
     }
 }

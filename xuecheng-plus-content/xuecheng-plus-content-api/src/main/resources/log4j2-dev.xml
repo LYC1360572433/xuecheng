@@ -77,7 +77,7 @@
         <!--TRACE   600-->
         <!--ALL   Integer.MAX_VALUE-->
         <!-- 当前处理开发阶段 所以level=debug -->
-        <Root level="DEBUG" includeLocation="true">
+        <Root level="info" includeLocation="true">
             <AppenderRef ref="AsyncAppender"/>
             <AppenderRef ref="Console"/>
             <AppenderRef ref="DebugAppender"/>

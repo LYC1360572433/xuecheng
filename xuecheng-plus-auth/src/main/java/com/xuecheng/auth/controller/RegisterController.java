@@ -1,5 +1,6 @@
 package com.xuecheng.auth.controller;
 
+import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 import com.xuecheng.ucenter.service.FindPasswordAuthService;
 import com.xuecheng.ucenter.service.RegisterAuthService;
@@ -17,7 +18,7 @@ public class RegisterController {
     RegisterAuthService registerAuthService;
 
     @RequestMapping("/register")
-    public void findPassword(@RequestBody AuthParamsDto authParamsDto) {
-        registerAuthService.registerAuth(authParamsDto);
+    public RestResponse register(@RequestBody AuthParamsDto authParamsDto) {
+        return registerAuthService.registerAuth(authParamsDto);
     }
 }

@@ -10,5 +10,5 @@ public interface FindPasswordAuthService {
      * @param authParamsDto
      * @return
      */
-    public void findPasswordAuth(AuthParamsDto authParamsDto);
+    public RestResponse findPasswordAuth(AuthParamsDto authParamsDto);
 }

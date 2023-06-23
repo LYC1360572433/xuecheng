@@ -1,5 +1,6 @@
 package com.xuecheng.media.service.impl;
 
+import com.xuecheng.base.exception.XueChengPlusException;
 import com.xuecheng.media.mapper.MediaFilesMapper;
 import com.xuecheng.media.mapper.MediaProcessHistoryMapper;
 import com.xuecheng.media.mapper.MediaProcessMapper;
@@ -76,7 +77,10 @@ public class MediaFileProcessServiceImpl implements MediaFileProcessService {
         //将MediaProcess表记录插入到MediaProcessHistory表
         MediaProcessHistory mediaProcessHistory = new MediaProcessHistory();
         BeanUtils.copyProperties(mediaProcess,mediaProcessHistory);
-        mediaProcessHistoryMapper.insert(mediaProcessHistory);
+        int insert = mediaProcessHistoryMapper.insert(mediaProcessHistory);
+        if (insert < 0){
+            XueChengPlusException.cast("插入数据库异常");
+        }
 
         //从MediaProcess删除当前任务
         mediaProcessMapper.deleteById(taskId);

@@ -2,6 +2,7 @@ package com.xuecheng.ucenter.service.imp;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xuecheng.base.exception.XueChengPlusException;
+import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.ucenter.feignclient.CheckCodeClient;
 import com.xuecheng.ucenter.mapper.XcUserMapper;
 import com.xuecheng.ucenter.mapper.XcUserRoleMapper;
@@ -33,7 +34,7 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
     XcUserRoleMapper xcUserRoleMapper;
 
     @Override
-    public void registerAuth(AuthParamsDto authParamsDto) {
+    public RestResponse registerAuth(AuthParamsDto authParamsDto) {
         //用户输入的验证码
         String checkcode = authParamsDto.getCheckcode();
         //正确的验证码
@@ -41,7 +42,7 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         //判断验证码是否正确
         Boolean verify = checkCodeClient.verify(checkcodekey, checkcode);
         if (!verify) {
-            XueChengPlusException.cast("验证码有误");
+            return RestResponse.validfail("验证码有误");
         }
         //判断两次密码是否一致
         //获取第一次输入的密码
@@ -49,7 +50,7 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         //获取第二次输入的确认密码
         String confirmpwd = authParamsDto.getConfirmpwd();
         if (!confirmpwd.equals(password)) {
-            XueChengPlusException.cast("两次密码输入不一致");
+            return RestResponse.validfail("两次密码输入不一致");
         }
         //根据手机号和邮箱查询用户(所以默认一个手机号只能有一个用户)
         //获取手机号或者邮箱
@@ -60,12 +61,13 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         queryWrapper.eq(XcUser::getEmail, email);
         XcUser xcUser = xcUserMapper.selectOne(queryWrapper);
         if (xcUser != null) {
-            XueChengPlusException.cast("该用户已存在");
+            return RestResponse.validfail("该用户已存在");
         }
         //向用户表添加数据
         xcUser = addUser(authParamsDto, confirmpwd);
         //向用户角色关系表添加数据
         addUserRole(xcUser);
+        return new RestResponse(200,"注册成功");
     }
 
     /**
@@ -81,7 +83,6 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         if (insert < 0) {
             XueChengPlusException.cast("新增用户角色关系失败");
         }
-        XueChengPlusException.cast("200","注册成功");
     }
 
     /**

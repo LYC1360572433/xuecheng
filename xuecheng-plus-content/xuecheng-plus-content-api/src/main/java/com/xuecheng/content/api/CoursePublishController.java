@@ -71,9 +71,9 @@ public class CoursePublishController {
     @ResponseBody
     @GetMapping("/course/whole/{courseId}")
     public CoursePreviewDto getCoursePublish(@PathVariable("courseId") Long courseId) {
-        //查询课程发布信息
-        CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
-        //
+        //查询课程发布信息 先从缓存查 没有再去数据库查
+        CoursePublish coursePublish = coursePublishService.getCoursePublishCache(courseId);
+        //CoursePublish coursePublish = coursePublishService.getCoursePublish(courseId);
         if (coursePublish == null) {
             return new CoursePreviewDto();
         }
@@ -89,4 +89,6 @@ public class CoursePublishController {
         coursePreviewInfo.setTeachplans(teachplans);
         return coursePreviewInfo;
     }
+
+
 }

@@ -17,3 +17,8 @@ POST http://www.51xuecheng.cn/api/orders/paynotify
 ###
 GET {{gateway_host}}/learning/mycoursetable?courseType=&sortType=&expiresType=
 
+###
+GET http://tjxt-user-t.itheima.net/api/auth/wxLogin?code=011fzYZv3LUVQ03fwc2w3oALKw2fzYZH&state=checkcode:e17c9d9dba61493f97b01314c15c1279
+
+###
+GET {{content_host}}/content/course/whole/127

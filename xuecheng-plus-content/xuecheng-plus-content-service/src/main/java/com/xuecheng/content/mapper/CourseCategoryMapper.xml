@@ -11,6 +11,7 @@
         <result column="is_show" property="isShow" />
         <result column="orderby" property="orderby" />
         <result column="is_leaf" property="isLeaf" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->

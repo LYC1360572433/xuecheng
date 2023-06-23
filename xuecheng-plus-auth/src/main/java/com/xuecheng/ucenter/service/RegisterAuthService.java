@@ -1,5 +1,6 @@
 package com.xuecheng.ucenter.service;
 
+import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.ucenter.model.dto.AuthParamsDto;
 
 public interface RegisterAuthService {
@@ -9,5 +10,5 @@ public interface RegisterAuthService {
      * @param authParamsDto
      * @return
      */
-    public void registerAuth(AuthParamsDto authParamsDto);
+    public RestResponse registerAuth(AuthParamsDto authParamsDto);
 }

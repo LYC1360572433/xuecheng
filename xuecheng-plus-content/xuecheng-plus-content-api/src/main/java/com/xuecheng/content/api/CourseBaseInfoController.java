@@ -30,19 +30,14 @@ public class CourseBaseInfoController {
     CourseBaseInfoService courseBaseInfoService;
 
     @ApiOperation("课程查询接口")//swagger提供的api 方法注释
-    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
+//    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/course/list")//@RequestBody(required = false) 参数可以不必填
     public PageResult<CourseBase> list(PageParams pageParams,@RequestBody(required = false) QueryCourseParamsDto queryCourseParamsDto){
-        //测试接口的硬编码
-        /*CourseBase courseBase = new CourseBase();
-        courseBase.setName("测试名称");
-        courseBase.setCreateDate(LocalDateTime.now());
-        List<CourseBase> courseBases = new ArrayList();
-        courseBases.add(courseBase);
-        PageResult pageResult = new PageResult<CourseBase>(courseBases,10,1,10);*/
-
         //当前登录用户
         SecurityUtil.XcUser user = SecurityUtil.getUser();
+//        if(user == null){
+//
+//        }
         //用户所属机构id
         Long companyId = null;
         if (StringUtils.isNotEmpty(user.getCompanyId())){

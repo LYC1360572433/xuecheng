@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/static/img/asset-favicon.ico">
-    <title>学成在线-${model.courseBase.name}</title>
+    <title>学成在线-${model.courseBase.name!''}</title>
 
     <link rel="stylesheet" href="/static/plugins/normalize-css/normalize.css" />
     <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.css" />
@@ -98,7 +98,7 @@
                             <div class="title"><span>适用人群</span></div>
                             <div class="cont cktop">
                                 <div >
-                                    <p>${model.courseBase.users!""}</p>
+                                    <p>${model.courseBase.users!''}</p>
                                 </div>
                                 <!--<span class="on-off">更多 <i class="i-chevron-bot"></i></span>-->
                             </div>
@@ -106,7 +106,7 @@
                         <div class="content-com course">
                             <div class="title"><span>课程制作</span></div>
                             <div class="cont">
-                                <div class="img-box"><img src="http://file.51xuecheng.cn${model.courseTeacher.photograph!""}" alt="" width="100" height="156"></div>
+                                <div class="img-box"><img src="http://file.51xuecheng.cn${model.courseTeacher.photograph!''}" alt="" width="100" height="156"></div>
                                 <div class="info-box">
                                     <p class="info">${model.courseTeacher.position!''}</p>
                                     <!-- <p class="lab">高级前端开发工程师 10年开发经验</p>-->
