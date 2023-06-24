@@ -1,4 +1,4 @@
-package com.xuecheng.content.config;
+package com.xuecheng.media.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

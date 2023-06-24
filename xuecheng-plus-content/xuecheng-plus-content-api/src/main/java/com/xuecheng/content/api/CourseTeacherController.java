@@ -10,9 +10,12 @@ import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.model.po.CourseTeacher;
 import com.xuecheng.content.service.CourseTeacherService;
+import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,7 @@ import java.util.List;
  */
 @Api(value = "教师信息编辑接口",tags = "教师信息编辑接口")
 @RestController
+@PreAuthorize("hasAuthority('xc_teachmanager_course')")//这里应该是编辑教师信息权限 因为数据库没写全，所以。。。
 public class CourseTeacherController {
     @Autowired
     CourseTeacherService courseTeacherService;
@@ -46,8 +50,13 @@ public class CourseTeacherController {
     @PostMapping("/courseTeacher")
     public CourseTeacher createCourseTeacher(@RequestBody @Validated(ValidationGroups.Insert.class) CourseTeacher courseTeacher){
 
-        //获取到用户所属机构的ID
-        Long companyId = 1232141425L;
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         CourseTeacher courseTeacherNew = courseTeacherService.createCourseTeacher(companyId, courseTeacher);
         return courseTeacherNew;
     }

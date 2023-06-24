@@ -10,6 +10,7 @@ import com.xuecheng.content.service.TeachplanService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @Api(value = "课程计划编辑接口", tags = "课程计划编辑接口")
 @RestController
+@PreAuthorize("hasAuthority('xc_teachmanager_course_plan')")//指定权限标识符，拥有此权限才可以访问此方法
 public class TeachplanController {
 
     @Autowired

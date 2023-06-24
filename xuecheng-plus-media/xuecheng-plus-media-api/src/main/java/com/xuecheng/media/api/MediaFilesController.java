@@ -7,10 +7,14 @@ import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
 import com.xuecheng.media.service.MediaFileService;
+import com.xuecheng.media.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,9 +32,16 @@ public class MediaFilesController {
     MediaFileService mediaFileService;
 
     @ApiOperation("媒资列表查询接口")
+    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/files")
     public PageResult<MediaFiles> list(PageParams pageParams, @RequestBody QueryMediaParamsDto queryMediaParamsDto) {
-        Long companyId = 1232141425L;
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         return mediaFileService.queryMediaFiels(companyId, pageParams, queryMediaParamsDto);
     }
 
@@ -45,6 +56,14 @@ public class MediaFilesController {
     //如果有objectName，就按这个去传；如果没有，就传到年月日
     public UploadFileResultDto upload(@RequestPart("filedata") MultipartFile filedata,
                                       @RequestParam(value = "objectName", required = false) String objectName) throws IOException {
+
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         //到这里已经从前端拿到文件了，存储在本地内存里面
         //准备上传文件的信息
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
@@ -58,7 +77,6 @@ public class MediaFilesController {
         File tempFile = File.createTempFile("minio", ".temp");
         //拷贝到临时文件 这样服务端就有了该文件
         filedata.transferTo(tempFile);
-        Long companyId = 1232141425L;
         //取出该文件的绝对路径
         String absolutePath = tempFile.getAbsolutePath();
         //调用service上传图片

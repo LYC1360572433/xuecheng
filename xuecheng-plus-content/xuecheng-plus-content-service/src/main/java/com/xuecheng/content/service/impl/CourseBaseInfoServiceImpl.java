@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,9 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     @Autowired
     CourseTeacherMapper courseTeacherMapper;
 
+
     @Override
+    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     public PageResult<CourseBase> queryCourseBaseList(Long companyId,PageParams pageParams, QueryCourseParamsDto courseParamsDto) {
 
         //拼接查询条件
@@ -70,6 +73,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
     @Transactional//凡是增删改的方法都要加上事务控制注解
     @Override
+    @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     public CourseBaseInfoDto createCourseBase(Long companyId, AddCourseDto dto) {
         //新增信息的顺序 先校验 再组装数据 再调用mapper插入
         //参数的合法性校验
@@ -166,6 +170,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         return courseBaseInfoDto;
     }
 
+
     @Override
     public CourseBaseInfoDto updateCourseBase(Long companyId, EditCourseDto editCourseDto) {
 
@@ -215,6 +220,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
      * @param courseId 课程id
      */
     @Override
+//    @PreAuthorize("hasAuthority('xc_teachmanager_course_del')")//指定权限标识符，拥有此权限才可以访问此方法
     public void deleteCourseBaseInfo(Long courseId) {
         //删除课程基本信息
         int i = courseBaseMapper.deleteById(courseId);
@@ -252,8 +258,8 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     }
 
     //单独写一个方法保存营销信息，逻辑：存在则更新，不存在则添加
-    private int saveCourseMarket(CourseMarket courseMarketNew){
 
+    private int saveCourseMarket(CourseMarket courseMarketNew){
         //参数的合法性校验
         String charge = courseMarketNew.getCharge();
         if (StringUtils.isEmpty(charge)){

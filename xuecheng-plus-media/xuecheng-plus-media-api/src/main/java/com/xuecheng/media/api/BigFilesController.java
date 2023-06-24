@@ -3,8 +3,10 @@ package com.xuecheng.media.api;
 import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.service.MediaFileService;
+import com.xuecheng.media.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,7 +65,13 @@ public class BigFilesController {
     public RestResponse mergechunks(@RequestParam("fileMd5") String fileMd5,
                                     @RequestParam("fileName") String fileName,
                                     @RequestParam("chunkTotal") int chunkTotal) throws Exception {
-        Long companyId = 1232141425L;
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         //文件信息对象
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();
         uploadFileParamsDto.setFilename(fileName);

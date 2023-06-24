@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.ToString;
 
 /**
- * @version 1.0
  * @description 通用结果类型(与前端交互用的数据类型)
  */
 

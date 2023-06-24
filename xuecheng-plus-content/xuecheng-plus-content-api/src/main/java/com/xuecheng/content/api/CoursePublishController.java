@@ -7,10 +7,13 @@ import com.xuecheng.content.model.dto.CoursePreviewDto;
 import com.xuecheng.content.model.dto.TeachplanDto;
 import com.xuecheng.content.model.po.CoursePublish;
 import com.xuecheng.content.service.CoursePublishService;
+import com.xuecheng.content.util.SecurityUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,17 +47,31 @@ public class CoursePublishController {
     }
 
     @ResponseBody
+    @PreAuthorize("hasAuthority('xc_teachmanager_course')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/courseaudit/commit/{courseId}")
     public void commitAudit(@PathVariable("courseId") Long courseId) {
-        Long companyId = 1232141425L;
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         coursePublishService.commitAudit(companyId, courseId);
     }
 
     @ApiOperation("课程发布")
     @ResponseBody
+    @PreAuthorize("hasAuthority('xc_teachmanager_course_publish')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/coursepublish/{courseId}")
     public void coursepublish(@PathVariable("courseId") Long courseId) {
-        Long companyId = 1232141425L;
+        //当前登录用户
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        //用户所属机构id
+        Long companyId = null;
+        if (StringUtils.isNotEmpty(user.getCompanyId())){
+            companyId = Long.parseLong(user.getCompanyId());
+        }
         coursePublishService.publish(companyId, courseId);
     }
 
