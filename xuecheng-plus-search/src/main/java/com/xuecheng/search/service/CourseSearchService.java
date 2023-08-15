@@ -6,6 +6,8 @@ import com.xuecheng.search.dto.SearchCourseParamDto;
 import com.xuecheng.search.dto.SearchPageResultDto;
 import com.xuecheng.search.po.CourseIndex;
 
+import java.util.List;
+
 /**
  * @description 课程搜索service
  */
@@ -20,4 +22,10 @@ public interface CourseSearchService {
      */
     SearchPageResultDto<CourseIndex> queryCoursePubIndex(PageParams pageParams, SearchCourseParamDto searchCourseParamDto);
 
+    /**
+     * 自动补全
+     * @param prefix 前缀
+     * @return
+     */
+    List<String> getSuggestions(String prefix);
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 课程索引信息
@@ -123,6 +124,11 @@ public class CourseIndex implements Serializable {
      * 课程有效期天数
      */
     private Integer validDays;
+
+    /**
+     *  自动补全
+     */
+    private List<String> suggestion;
 
 
 }

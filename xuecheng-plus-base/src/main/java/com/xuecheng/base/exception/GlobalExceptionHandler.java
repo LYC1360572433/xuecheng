@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @ControllerAdvice
-//@RestControllerAdvice = @ControllerAdvice + @ResponseBody
+//@RestControllerAdvice = @ControllerAdvice + @ResponseBody   处理异常的方法返回值会转换为json后再响应给前端
 public class GlobalExceptionHandler {
     //对项目的自定义异常类型进行处理
     @ResponseBody//返回json

@@ -60,10 +60,11 @@ public class MediaFilesController {
         //当前登录用户
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         //用户所属机构id
-        Long companyId = null;
-        if (StringUtils.isNotEmpty(user.getCompanyId())){
-            companyId = Long.parseLong(user.getCompanyId());
-        }
+//        Long companyId = null;
+//        if (StringUtils.isNotEmpty(user.getCompanyId())){
+//            companyId = Long.parseLong(user.getCompanyId());
+//        }
+        Long companyId = Long.parseLong("1232141425");
         //到这里已经从前端拿到文件了，存储在本地内存里面
         //准备上传文件的信息
         UploadFileParamsDto uploadFileParamsDto = new UploadFileParamsDto();

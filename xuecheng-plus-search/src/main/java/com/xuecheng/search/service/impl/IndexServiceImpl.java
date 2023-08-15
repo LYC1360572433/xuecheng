@@ -10,16 +10,24 @@ import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @description 课程索引管理接口实现
@@ -28,6 +36,8 @@ import java.io.IOException;
 @Service
 public class IndexServiceImpl implements IndexService {
 
+    @Value("${elasticsearch.course.index}")
+    private String courseIndexStore;
 
     @Autowired
     RestHighLevelClient client;
@@ -48,7 +58,7 @@ public class IndexServiceImpl implements IndexService {
             XueChengPlusException.cast("添加索引出错");
         }
         String name = indexResponse.getResult().name();
-        System.out.println(name);
+//        System.out.println(name);
         return name.equalsIgnoreCase("created") || name.equalsIgnoreCase("updated");
 
     }
@@ -90,4 +100,6 @@ public class IndexServiceImpl implements IndexService {
         DocWriteResponse.Result result = deleteResponse.getResult();
         return result.name().equalsIgnoreCase("deleted");
     }
+
+
 }

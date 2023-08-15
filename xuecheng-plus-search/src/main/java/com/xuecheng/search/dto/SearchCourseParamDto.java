@@ -20,6 +20,7 @@ public class SearchCourseParamDto {
     private String st;
     //难度等级
     private String grade;
-
+    //排序类型
+    private String sortType;
 
 }

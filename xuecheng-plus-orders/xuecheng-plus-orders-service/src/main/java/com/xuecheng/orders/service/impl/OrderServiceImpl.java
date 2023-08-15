@@ -99,7 +99,6 @@ public class OrderServiceImpl implements OrderService {
         PayRecordDto payRecordDto = new PayRecordDto();
         BeanUtils.copyProperties(payRecord, payRecordDto);
         payRecordDto.setQrcode(qrCode);
-
         return payRecordDto;
     }
 

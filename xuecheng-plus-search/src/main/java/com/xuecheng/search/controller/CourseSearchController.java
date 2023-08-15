@@ -11,6 +11,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @description 课程搜索接口
  */
@@ -28,6 +30,14 @@ public class CourseSearchController {
     public SearchPageResultDto<CourseIndex> list(PageParams pageParams, SearchCourseParamDto searchCourseParamDto) {
 
         return courseSearchService.queryCoursePubIndex(pageParams, searchCourseParamDto);
+
+    }
+
+    @ApiOperation("自动补全")
+    @GetMapping("/suggestion")
+    public List<String> getSuggestions(@RequestParam("key") String prefix) {
+
+        return courseSearchService.getSuggestions(prefix);
 
     }
 }

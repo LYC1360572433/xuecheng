@@ -18,6 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -123,6 +126,11 @@ public class CoursePublishTask extends MessageProcessAbstract {
 
         CourseIndex courseIndex = new CourseIndex();
         BeanUtils.copyProperties(coursePublish,courseIndex);
+        List<String> suggestions = new ArrayList<>();
+        //此处suggestions是个数组，可以根据需求添加
+        Collections.addAll(suggestions,courseIndex.getName());
+        courseIndex.setSuggestion(suggestions);
+
         //远程调用
         Boolean add = searchServiceClient.add(courseIndex);
         if (!add){

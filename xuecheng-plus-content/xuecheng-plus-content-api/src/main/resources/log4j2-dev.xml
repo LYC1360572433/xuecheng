@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration monitorInterval="180" packages="">
+<Configuration monitorInterval="180" packages="" strict="">
     <properties>
         <property name="logdir">logs</property>
         <property name="PATTERN">%date{YYYY-MM-dd HH:mm:ss,SSS} %level [%thread][%file:%line] - %msg%n%throwable</property>

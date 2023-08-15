@@ -23,6 +23,7 @@ import java.util.List;
 /**
  * @description 课程预览，发布
  */
+//@CrossOrigin
 @Api(value = "课程预览发布接口", tags = "课程预览发布接口")
 @Controller
 public class CoursePublishController {
@@ -30,7 +31,7 @@ public class CoursePublishController {
     @Autowired//操作课程发布表
     CoursePublishService coursePublishService;
 
-
+//    @CrossOrigin
     @GetMapping("/coursepreview/{courseId}")
     public ModelAndView preview(@PathVariable("courseId") Long courseId) {
 

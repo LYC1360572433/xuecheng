@@ -3,6 +3,8 @@ package com.xuecheng.ucenter.model.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -22,7 +24,6 @@ public class XcUser implements Serializable {
     private String id;
 
     private String username;
-
     private String password;
 
     private String salt;

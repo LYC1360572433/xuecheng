@@ -16,9 +16,8 @@ import java.math.BigDecimal;
 @ApiModel(value="AddCourseDto", description="新增课程基本信息")
 public class AddCourseDto {
 
- @NotEmpty(message = "新增课程名称不能为空",groups = {ValidationGroups.Insert.class})//该校验属于新增组别
- @NotEmpty(message = "修改课程名称不能为空",groups = {ValidationGroups.Update.class})//该校验属于修改组别
- //@NotEmpty(message = "课程名称不能为空")
+ //校验注解，该校验属于新增,更新组别
+ @NotEmpty(message = "课程名称不能为空",groups = {ValidationGroups.Insert.class,ValidationGroups.Update.class})
  @ApiModelProperty(value = "课程名称", required = true)
  private String name;
 

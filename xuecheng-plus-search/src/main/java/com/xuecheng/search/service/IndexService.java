@@ -2,6 +2,8 @@ package com.xuecheng.search.service;
 
 import com.xuecheng.search.po.CourseIndex;
 
+import java.util.List;
+
 /**
  * @description 课程索引service  添加文档接口
  */

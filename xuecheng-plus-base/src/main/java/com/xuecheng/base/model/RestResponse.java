@@ -1,5 +1,6 @@
 package com.xuecheng.base.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,6 +10,7 @@ import lombok.ToString;
 
 @Data
 @ToString
+@AllArgsConstructor
 public class RestResponse<T> {
 
     /**
@@ -60,7 +62,7 @@ public class RestResponse<T> {
 
 
     /**
-     * 添加正常响应数据（包含响应内容）
+     * 添加正常响应数据（包含响应内容）查询 成功响应(把查询结果做为返回数据响应给前端)
      *
      * @return RestResponse Rest服务封装相应数据
      */
@@ -78,7 +80,7 @@ public class RestResponse<T> {
     }
 
     /**
-     * 添加正常响应数据（不包含响应内容）
+     * 添加正常响应数据（不包含响应内容）,增删改 成功响应(不需要给前端返回数据)
      *
      * @return RestResponse Rest服务封装相应数据
      */

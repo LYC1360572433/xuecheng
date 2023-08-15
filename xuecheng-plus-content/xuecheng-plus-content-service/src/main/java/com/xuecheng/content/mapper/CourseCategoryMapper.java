@@ -3,7 +3,9 @@ package com.xuecheng.content.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.xuecheng.content.model.dto.CourseCategoryTreeDto;
 import com.xuecheng.content.model.po.CourseCategory;
+import org.apache.ibatis.annotations.Options;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
 public interface CourseCategoryMapper extends BaseMapper<CourseCategory> {
 
     //使用递归查询分类     自定义mapper(复杂的sql语句)
-    public List<CourseCategoryTreeDto> selectTreeNodes(String id);
+
+    List<CourseCategoryTreeDto> selectTreeNodes(String id);
 
 }
