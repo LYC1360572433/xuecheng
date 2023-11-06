@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Api(value = "课程信息管理接口",tags = "课程信息管理接口")
+@Api(value = "课程信息管理接口", tags = "课程信息管理接口")
 @RestController//相当于@Controller和@ResponseBody的组合 响应json      @RequestBody:传过来的json参数转为java对象
 public class CourseBaseInfoController {
 
@@ -28,15 +28,17 @@ public class CourseBaseInfoController {
     @ApiOperation("课程查询接口")//swagger提供的api 方法注释
     @PreAuthorize("hasAuthority('xc_teachmanager_course_list')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/course/list")//@RequestBody(required = false) 参数可以不必填
-    public PageResult<CourseBase> list(PageParams pageParams,@RequestBody(required = false) QueryCourseParamsDto queryCourseParamsDto){
+    public PageResult<CourseBase> list(PageParams pageParams, @RequestBody(required = false) QueryCourseParamsDto queryCourseParamsDto) {
         //当前登录用户
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         //用户所属机构id
         Long companyId = null;
+//        Long companyId = 1232141425L;
+
         if (StringUtils.isNotEmpty(user.getCompanyId())){
             companyId = Long.parseLong(user.getCompanyId());
         }
-        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(companyId,pageParams, queryCourseParamsDto);
+        PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(companyId, pageParams, queryCourseParamsDto);
 
         return courseBasePageResult;
     }
@@ -45,13 +47,13 @@ public class CourseBaseInfoController {
     @PreAuthorize("hasAuthority('xc_teachmanager_course_add')")//指定权限标识符，拥有此权限才可以访问此方法
     @PostMapping("/course")
     //@Validated 校验参数      @Validated(ValidationGroups.Insert.class) 组别类型
-    public CourseBaseInfoDto createCourseBase(@RequestBody @Validated(ValidationGroups.Insert.class) AddCourseDto addCourseDto){
+    public CourseBaseInfoDto createCourseBase(@RequestBody @Validated(ValidationGroups.Insert.class) AddCourseDto addCourseDto) {
 
         //当前登录用户
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         //用户所属机构id
         Long companyId = null;
-        if (StringUtils.isNotEmpty(user.getCompanyId())){
+        if (StringUtils.isNotEmpty(user.getCompanyId())) {
             companyId = Long.parseLong(user.getCompanyId());
         }
         CourseBaseInfoDto courseBase = courseBaseInfoService.createCourseBase(companyId, addCourseDto);
@@ -63,7 +65,7 @@ public class CourseBaseInfoController {
     //这里的权限有点混乱，数据库没设计好
     @PreAuthorize("hasAuthority('xc_teachmanager_course')")//指定权限标识符，拥有此权限才可以访问此方法
     @GetMapping("/course/{courseId}")
-    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId){
+    public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId) {
         //获取当前用户的身份
         //获取上下文 获取认证信息 获取身份
         //底层使用thread local 把用户身份放在线程的变量中 线程里面的所有方法都可以拿到身份信息
@@ -82,12 +84,12 @@ public class CourseBaseInfoController {
     //这里的权限有点混乱，数据库没设计好
     @PreAuthorize("hasAuthority('xc_teachmanager_course')")//指定权限标识符，拥有此权限才可以访问此方法
     @PutMapping("/course")
-    public CourseBaseInfoDto modifyCourseBase(@RequestBody @Validated(ValidationGroups.Update.class) EditCourseDto editCourseDto){
+    public CourseBaseInfoDto modifyCourseBase(@RequestBody @Validated(ValidationGroups.Update.class) EditCourseDto editCourseDto) {
         //当前登录用户
         SecurityUtil.XcUser user = SecurityUtil.getUser();
         //用户所属机构id
         Long companyId = null;
-        if (StringUtils.isNotEmpty(user.getCompanyId())){
+        if (StringUtils.isNotEmpty(user.getCompanyId())) {
             companyId = Long.parseLong(user.getCompanyId());
         }
         CourseBaseInfoDto courseBaseInfoDto = courseBaseInfoService.updateCourseBase(companyId, editCourseDto);
@@ -96,12 +98,13 @@ public class CourseBaseInfoController {
 
     /**
      * 删除课程信息(包括课程相关的基本信息、营销信息、课程计划、课程教师信息)
+     *
      * @param courseId 课程id
      */
     @ApiOperation("删除课程信息接口")
     @PreAuthorize("hasAuthority('xc_teachmanager_course_del')")//指定权限标识符，拥有此权限才可以访问此方法
-    @DeleteMapping ("/course/{courseId}")
-    public void deleteCourseBaseInfo(@PathVariable Long courseId){
+    @DeleteMapping("/course/{courseId}")
+    public void deleteCourseBaseInfo(@PathVariable Long courseId) {
         courseBaseInfoService.deleteCourseBaseInfo(courseId);
     }
 }

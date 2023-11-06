@@ -9,10 +9,7 @@ import com.xuecheng.media.service.MediaFileService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Api(value = "媒资文件管理接口",tags = "媒资文件管理接口")
 @RestController
@@ -37,5 +34,23 @@ public class MediaOpenController {
             return RestResponse.validfail("该视频正在处理中");
         }
         return RestResponse.success(url);
+    }
+
+    @ApiOperation(value = "删除媒资信息")
+    @DeleteMapping("/{mediaId}")
+    public RestResponse<String> deleteMediaByMediaId(@PathVariable String mediaId){
+
+        //查询媒资文件信息
+        MediaFiles mediaFiles = mediaFileService.getFileById(mediaId);
+        String bucket = mediaFiles.getBucket();
+        String filePath = mediaFiles.getFilePath();
+        if(mediaFiles == null){
+            return RestResponse.validfail("找不到媒资信息");
+        }
+        //删除信息
+        mediaFileService.removeById(mediaId);
+        //删除minio里面对应的文件
+        mediaFileService.removeFileFromMinio(bucket,filePath);
+        return RestResponse.success();
     }
 }

@@ -16,7 +16,7 @@ public class WxLoginController {
     @Autowired
     WxAuthService wxAuthService;
 
-    //一扫码，就进入该方法
+    //一扫码，在微信点击允许后就进入该方法
     @RequestMapping("/wxLogin")
     public String wxLogin(String code, String state) throws IOException {
         log.debug("微信扫码回调,code:{},state:{}", code, state);

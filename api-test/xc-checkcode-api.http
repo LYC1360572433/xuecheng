@@ -3,10 +3,13 @@ POST {{checkcode_host}}/checkcode/phone?param1=11
 
 
 ### 校验验证码
-POST {{checkcode_host}}/checkcode/verify?key=checkcode:98b243fb06bb4dcda470658b1e1d5b0c&code=LSJ2
+POST 47.115.227.118:63075/checkcode/verify?key=checkcode:98b243fb06bb4dcda470658b1e1d5b0c&code=LSJ2
 
 ### 申请验证码
-POST 192.168.101.65:63075/checkcode/pic
+POST {{checkcode_host}}/checkcode/pic
+
+###
+POST 47.115.227.118:63075/checkcode/pic
 
 ###
 GET http://www.51xuecheng.cn/api/content/coursepreview/126

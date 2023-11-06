@@ -22,7 +22,11 @@ import java.util.regex.Pattern;
  *
  */
 public class CommonUtil {
-
+	/**
+	 * 将隐藏手机号码
+	 * @param mobile
+	 * @return
+	 */
 	public static String hiddenMobile(String mobile) {
 		if (StringUtils.isBlank(mobile)) {
 			return "";
@@ -32,6 +36,7 @@ public class CommonUtil {
 
 
 	/**
+	 * BigDecimal用来对超过16位有效位的数进行精确的运算
 	 * @param s
 	 * @param isFen
 	 * @return
@@ -45,28 +50,40 @@ public class CommonUtil {
 		}
 		BigDecimal bd = new BigDecimal(s);
 		if (isFen != null && isFen.booleanValue()){
+			// 第一个参数是 除数；第二个参数舍入模式
 			bd = bd.divide(new BigDecimal(100), 2);
 		}
 		return bd;
 	}
 
-
+	// 正则表达式对象 匹配时间格式 如：1:30或1:30:45
 	public static final Pattern shiFenMiaoPattern = Pattern.compile("(\\d{1,2}[：:]){0,2}\\d{1,2}");
 
+	/**
+	 * 时分秒转换为 秒数
+	 * @param shifenmiao
+	 * @return
+	 */
 	public static Long shiFenMiaoToSeconds (String shifenmiao) {
 		if (StringUtils.isBlank(shifenmiao)) {
 			return 0L;
 		}
 		Long totalSeconds = 0L;
+		// 将字符串中所有的空格字符替换为空字符串（即删除所有的空格)
 		shifenmiao = shifenmiao.replaceAll(" ", "");
 		boolean matched = shiFenMiaoPattern.matcher(shifenmiao).matches();
 		if (matched) {
 			List<String> sfmList = new ArrayList<>();
+			// 用于分隔字符串
 			StringTokenizer st = new StringTokenizer(shifenmiao,":：");
+			// 当没有分隔符时，循环终止
 			while (st.hasMoreTokens()) {
+				// 返回从当前位置到下一个分隔符的字符串
 				sfmList.add(st.nextToken());
 			}
+			// 逆序
 			Collections.reverse(sfmList);
+			// 将列表List中的元素转导出为数组（指定类型数组）
 			String[] sfmArr = sfmList.toArray(new String[0]);
 			for (int i = 0; i < sfmArr.length; i++) {
 				if (i == 0) {
@@ -119,6 +136,7 @@ public class CommonUtil {
 		LocalDateTime time1 = LocalDateTime.of(2019,8,8,8,8);
 		LocalDateTime time2 = LocalDateTime.of(2019,9,9,8,8);
 		Duration duration = Duration.between(time1, time2);
+		System.out.println(duration);
 		System.out.println(duration.getSeconds());
 		System.out.println(duration.isNegative());
 		System.out.println(time1.until(time2, ChronoUnit.SECONDS));

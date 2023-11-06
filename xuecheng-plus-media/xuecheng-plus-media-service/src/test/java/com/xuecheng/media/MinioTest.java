@@ -26,7 +26,7 @@ public class MinioTest {
 
     MinioClient minioClient =
             MinioClient.builder()
-                    .endpoint("http://192.168.101.1:9000")
+                    .endpoint("http://192.168.101.65:9000")
                     .credentials("minioadmin", "minioadmin")
                     .build();
 
@@ -64,8 +64,8 @@ public class MinioTest {
     public void test_delete() throws Exception {
         //创建类对象
         RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
-                .bucket("testbucket")
-                .object("test/01/1.mp4")
+                .bucket("mediafiles")
+                .object("/2022/09/14/a16da7a132559daf9e1193166b3e7f52.jpg")
                 .build();
 
         minioClient.removeObject(removeObjectArgs);

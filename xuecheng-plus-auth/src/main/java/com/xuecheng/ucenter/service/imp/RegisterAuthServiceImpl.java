@@ -52,13 +52,12 @@ public class RegisterAuthServiceImpl implements RegisterAuthService {
         if (!confirmpwd.equals(password)) {
             return RestResponse.validfail("两次密码输入不一致");
         }
-        //根据手机号和邮箱查询用户(所以默认一个手机号只能有一个用户)
+        //根据手机号和邮箱查询用户(所以默认一个手机号只能有一个用户,邮箱同理)
         //获取手机号或者邮箱
         String cellphone = authParamsDto.getCellphone();
         String email = authParamsDto.getEmail();
         LambdaQueryWrapper<XcUser> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(XcUser::getCellphone, cellphone);
-        queryWrapper.eq(XcUser::getEmail, email);
+        queryWrapper.eq(XcUser::getEmail, email).or().eq(XcUser::getCellphone, cellphone);
         XcUser xcUser = xcUserMapper.selectOne(queryWrapper);
         if (xcUser != null) {
             return RestResponse.validfail("该用户已存在");

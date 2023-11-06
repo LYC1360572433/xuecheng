@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xuecheng.content.mapper.ExamMapper">
+
+    <resultMap id="BaseResultMap" type="com.xuecheng.content.model.po.Exam">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="question" column="question" jdbcType="VARCHAR"/>
+            <result property="optiona" column="optionA" jdbcType="VARCHAR"/>
+            <result property="optionb" column="optionB" jdbcType="VARCHAR"/>
+            <result property="optionc" column="optionC" jdbcType="VARCHAR"/>
+            <result property="optiond" column="optionD" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,question,optionA,
+        optionB,optionC,optionD
+    </sql>
+</mapper>

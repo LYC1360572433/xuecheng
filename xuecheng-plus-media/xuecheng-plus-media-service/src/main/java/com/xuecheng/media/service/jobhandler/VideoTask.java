@@ -2,6 +2,7 @@ package com.xuecheng.media.service.jobhandler;
 
 import com.xuecheng.base.utils.Mp4VideoUtil;
 import com.xuecheng.media.mapper.MediaProcessMapper;
+import com.xuecheng.media.model.po.MediaFiles;
 import com.xuecheng.media.model.po.MediaProcess;
 import com.xuecheng.media.service.MediaFileProcessService;
 import com.xuecheng.media.service.MediaFileService;
@@ -128,7 +129,7 @@ public class VideoTask {
                     //上传到minio
                     //这里上传到minio，不应该用objectName,因为上面的objectName还是avi为后缀
                     //应该再定义一个objectName1 以mp4为后缀
-                    String objectName1 = getFilePath(fileId,".mp4");
+                    String objectName1 = getFilePath(fileId, ".mp4");
                     boolean b1 = mediaFileService.addMediaFilesToMinIo(mp4_path, "video/mp4", bucket, objectName1);
                     if (!b1) {
                         //上传到minio失败
@@ -136,9 +137,19 @@ public class VideoTask {
                         mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "上传mp4到minio失败");
                         return;
                     }
-                    //上传到minio成功
+                    //上传到minio成功,将minio中avi视频删除
+                    boolean b2 = mediaFileService.removeFileFromMinio(bucket, objectName);
+                    if (!b2) {
+                        // minio中avi视频删除失败
+                        log.debug("minio中avi视频删除失败,taskId:{}", taskId);
+                        mediaFileProcessService.saveProcessFinishStatus(taskId, "3", fileId, null, "minio中avi视频删除失败");
+                        return;
+                    }
+                    MediaFiles mediaFiles = mediaFileService.getFileById(fileId);
+                    mediaFiles.setFilePath(objectName1);
+                    mediaFileService.updateById(mediaFiles);
                     //mp4文件的url
-                    String url = getFilePath(fileId, ".mp4");
+                    String url = "/" + bucket + "/" + getFilePath(fileId, ".mp4");
                     //更新任务的状态为成功
                     mediaFileProcessService.saveProcessFinishStatus(taskId, "2", fileId, url, "下载视频到本地成功");
                 } finally {

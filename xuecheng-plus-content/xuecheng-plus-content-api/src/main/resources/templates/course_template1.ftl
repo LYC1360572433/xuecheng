@@ -77,7 +77,6 @@
 <div class="article-cont">
     <div class="tit-list">
         <a href="javascript:;" id="articleClass" class="active">课程介绍</a>
-        <a href="javascript:;" id="articleItem">目录</a>
     </div>
     <div class="article-box">
         <div class="articleClass" style="display: block">

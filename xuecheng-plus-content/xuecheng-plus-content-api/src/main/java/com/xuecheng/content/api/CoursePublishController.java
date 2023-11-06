@@ -43,7 +43,7 @@ public class CoursePublishController {
 
         //key(重要) 以model为头   第二个参数是模型对象
         modelAndView.addObject("model", coursePreviewInfo);
-        modelAndView.setViewName("course_template");
+        modelAndView.setViewName("course_template1");
         return modelAndView;
     }
 

@@ -17,12 +17,12 @@ import java.util.List;
 public interface TeachplanMapper extends BaseMapper<Teachplan> {
 
     //课程计划查询
-    public List<TeachplanDto> selectTreeNodes(Long courseId);
+    List<TeachplanDto> selectTreeNodes(Long courseId);
 
     //删除小章节下的媒资信息
-    public void deleteTeachplanMedia(Long teachplanId);
+    void deleteTeachplanMedia(Long teachplanId);
 
     //根据排序号查课程计划
-    public Teachplan selectTeachplanByOrderby(@Param("orderby")Integer orderby,@Param("grade")Integer grade,@Param("parentid")Long parentid,@Param("courseId")Long courseId);
+    Teachplan selectTeachplanByOrderby(@Param("orderby")Integer orderby,@Param("grade")Integer grade,@Param("parentid")Long parentid,@Param("courseId")Long courseId);
 
 }

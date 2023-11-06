@@ -74,6 +74,7 @@ public class MediaFilesController {
         uploadFileParamsDto.setFileSize(filedata.getSize());
         //原始文件类型 因为现在上传的是图片 所以文件类型写死 001001
         uploadFileParamsDto.setFileType("001001");
+        uploadFileParamsDto.setTags("图片文件");
         //创建一个临时文件
         File tempFile = File.createTempFile("minio", ".temp");
         //拷贝到临时文件 这样服务端就有了该文件

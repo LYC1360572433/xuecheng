@@ -3,6 +3,7 @@ package com.xuecheng.media.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.j256.simplemagic.ContentInfo;
 import com.j256.simplemagic.ContentInfoUtil;
 import com.xuecheng.base.exception.XueChengPlusException;
@@ -21,6 +22,7 @@ import io.minio.*;
 import io.minio.errors.*;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
+import io.minio.messages.DeletedObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
@@ -38,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,7 +52,7 @@ import java.util.stream.Stream;
 
 @Slf4j
 @Service
-public class MediaFileServiceImpl implements MediaFileService {
+public class MediaFileServiceImpl extends ServiceImpl<MediaFilesMapper, MediaFiles> implements MediaFileService {
 
     @Autowired
     MediaFilesMapper mediaFilesMapper;
@@ -83,10 +86,14 @@ public class MediaFileServiceImpl implements MediaFileService {
 
     @Override
     public PageResult<MediaFiles> queryMediaFiels(Long companyId, PageParams pageParams, QueryMediaParamsDto queryMediaParamsDto) {
-
         //构建查询条件对象
         LambdaQueryWrapper<MediaFiles> queryWrapper = new LambdaQueryWrapper<>();
-
+        if (!"".equals(queryMediaParamsDto.getFilename())) {
+            queryWrapper.like(MediaFiles::getFilename, queryMediaParamsDto.getFilename());
+        }
+        if (!"".equals(queryMediaParamsDto.getFileType())) {
+            queryWrapper.eq(MediaFiles::getFileType, queryMediaParamsDto.getFileType());
+        }
         //分页对象
         Page<MediaFiles> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         // 查询数据内容获得结果
@@ -120,6 +127,7 @@ public class MediaFileServiceImpl implements MediaFileService {
 
     /**
      * 将文件上传到minio
+     *
      * @param localFilePath 文件本地路径
      * @param mimeType      媒体类型
      * @param bucket        桶
@@ -136,7 +144,10 @@ public class MediaFileServiceImpl implements MediaFileService {
                     // 在根目录(桶)下上传 存储该文件 也就是会得到testbucket/test.txt
                     // .object("test.txt")//上传到minio中,它的对象名 叫什么
                     .object(objectName)
-                    .contentType(mimeType)// 用来设置媒体文件类型
+                    .contentType(mimeType)// 用来设置媒体文件类型 重点注意，
+                    // 用application/octet-stream在浏览器打开文件会下载，而不是打开
+                    //这样才可以minio播放视频
+//                    .contentType("video/mp4")
                     .build();
             //上传文件
             minioClient.uploadObject(uploadObjectArgs);
@@ -147,6 +158,24 @@ public class MediaFileServiceImpl implements MediaFileService {
             log.error("上传文件出错,bucket:{},objectName:{},错误信息:{}", bucket, objectName, e.getMessage());
         }
         return false;
+    }
+
+    @Override
+    public boolean removeFileFromMinio(String bucket, String filePath) {
+        RemoveObjectArgs removeObjectArgs = RemoveObjectArgs.builder()
+                .bucket(bucket)
+                .object(filePath)
+                .build();
+
+        try {
+            minioClient.removeObject(removeObjectArgs);
+            log.debug("删除minio文件成功,bucket:{},filePath:{}", bucket, filePath);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("删除minio文件出错,bucket:{},filePath:{},错误信息:{}", bucket, filePath, e.getMessage());
+            return false;
+        }
     }
 
     //获取文件默认存储目录路径 年/月/日
@@ -176,7 +205,7 @@ public class MediaFileServiceImpl implements MediaFileService {
 //    @Transactional//不仅要上传，还要保存数据库，所以要受事务控制
     //因为里面有涉及网络传输 有可能会占用数据库资源很长时间 所以不在这加入事务控制
     @Override
-    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath,String objectName) {
+    public UploadFileResultDto uploadFile(Long companyId, UploadFileParamsDto uploadFileParamsDto, String localFilePath, String objectName) {
 
         //文件名
         String filename = uploadFileParamsDto.getFilename();
@@ -195,7 +224,7 @@ public class MediaFileServiceImpl implements MediaFileService {
         String fileMd5 = getFileMd5(new File(localFilePath));
 
         //先判断有没有objectName
-        if (StringUtils.isEmpty(objectName)){
+        if (StringUtils.isEmpty(objectName)) {
             //如果没有，使用默认年月日去存储
             //最后，拼接起来，形成文件名
             objectName = defaultFolderPath + fileMd5 + extension;
@@ -256,7 +285,7 @@ public class MediaFileServiceImpl implements MediaFileService {
             }
             //记录待处理任务 只要上面的插入数据库操作成功，下面的也会成功 形成一个事务
             addWaitingTask(mediaFiles);
-            log.debug("保存文件信息到数据库成功,{}",mediaFiles.toString());
+            log.debug("保存文件信息到数据库成功,{}", mediaFiles.toString());
             return mediaFiles;
         }
         return mediaFiles;
@@ -264,9 +293,10 @@ public class MediaFileServiceImpl implements MediaFileService {
 
     /**
      * 添加待处理任务
+     *
      * @param mediaFiles 媒资文件信息
      */
-    private void addWaitingTask(MediaFiles mediaFiles){
+    private void addWaitingTask(MediaFiles mediaFiles) {
         //文件名称
         String filename = mediaFiles.getFilename();
         //文件扩展名
@@ -274,9 +304,9 @@ public class MediaFileServiceImpl implements MediaFileService {
         //文件mimeType
         String mimeType = getMimeType(exension);
         //如果是avi视频添加到视频待处理表
-        if(mimeType.equals("video/x-msvideo")){
+        if (mimeType.equals("video/x-msvideo")) {
             MediaProcess mediaProcess = new MediaProcess();
-            BeanUtils.copyProperties(mediaFiles,mediaProcess);
+            BeanUtils.copyProperties(mediaFiles, mediaProcess);
             mediaProcess.setStatus("1");//未处理
             mediaProcess.setFailCount(0);//失败次数默认为0
             mediaProcess.setUrl(null);
@@ -352,7 +382,8 @@ public class MediaFileServiceImpl implements MediaFileService {
         String chunkFilePath = getChunkFileFolderPath(fileMd5) + chunk;
         //获取mimeType
         //分块文件没有扩展名，但是也需要定义mimeType对象
-        String mimeType = getMimeType(null);
+//        String mimeType = getMimeType(null);
+        String mimeType = "video/mp4";
         //将分块文件上传到minio
         boolean b = addMediaFilesToMinIo(localChunkFilePath, mimeType, bucket_video, chunkFilePath);
         if (!b) {
@@ -374,6 +405,7 @@ public class MediaFileServiceImpl implements MediaFileService {
         //合并后文件的objectName
         String objectName = getFilePathByMd5(fileMd5, extension);
         //找到所有的分块文件调用minio的sdk进行文件合并
+        //Stream.iterate无限流
         List<ComposeSource> sources = Stream.iterate(0, i -> ++i)//起始值为0，每次生成一个i+1的数
                 .limit(chunkTotal)//截断流的长度
                 .map(i -> ComposeSource.builder()
@@ -381,11 +413,15 @@ public class MediaFileServiceImpl implements MediaFileService {
                         .object(chunkFileFolderPath + i)
                         .build()).collect(Collectors.toList());
 
+        // 设置请求头信息（使合并的文件打开能直接播放视频）
+        HashMap<String, String> map = new HashMap<>();
+        map.put("Content-Type","video/mp4");
         //指定合并后的objectName等信息
         ComposeObjectArgs composeObjectArgs = ComposeObjectArgs.builder()
                 .bucket(bucket_video)
                 .object(objectName)//合并后的文件的objectName
                 .sources(sources)//指定源文件
+                .headers(map)
                 .build();
         try {
             minioClient.composeObject(composeObjectArgs);
@@ -403,33 +439,34 @@ public class MediaFileServiceImpl implements MediaFileService {
             //计算合并后文件的md5
             String mergeFile_md5 = DigestUtils.md5Hex(fileInputStream);
             //比较原始md5和合并后文件的md5
-            if (!fileMd5.equals(mergeFile_md5)){
-                log.error("校验合并文件md5值不一致,原始文件:{},合并文件:{}",fileMd5,mergeFile_md5);
-                return RestResponse.validfail(false,"文件校验失败");
+            if (!fileMd5.equals(mergeFile_md5)) {
+                log.error("校验合并文件md5值不一致,原始文件:{},合并文件:{}", fileMd5, mergeFile_md5);
+                return RestResponse.validfail(false, "文件校验失败");
             }
             //文件大小
             uploadFileParamsDto.setFileSize(file.length());
         } catch (Exception e) {
-            return RestResponse.validfail(false,"文件校验失败");
+            return RestResponse.validfail(false, "文件校验失败");
         }
         //合并文件成功
         //将文件信息入库(非事务方法调用事务方法,要用代理对象去调，要不然事务控制失效)
         MediaFiles mediaFiles = currentProxy.addMediaFilesToDb(companyId, fileMd5, uploadFileParamsDto, bucket_video, objectName);
-        if (mediaFiles == null){
-            return RestResponse.validfail(false,"文件入库失败");
+        if (mediaFiles == null) {
+            return RestResponse.validfail(false, "文件入库失败");
         }
         //清理分块文件
-        clearChunkFiles(chunkFileFolderPath,chunkTotal);
+        clearChunkFiles(chunkFileFolderPath, chunkTotal);
 
         return RestResponse.success(true);
     }
 
     /**
      * 清除分块文件
+     *
      * @param chunkFileFolderPath 分块文件路径
-     * @param chunkTotal 分块文件总数
+     * @param chunkTotal          分块文件总数
      */
-    private void clearChunkFiles(String chunkFileFolderPath,int chunkTotal){
+    private void clearChunkFiles(String chunkFileFolderPath, int chunkTotal) {
 
         try {
             Iterable<DeleteObject> deleteObjects = Stream.iterate(0, i -> ++i)
@@ -440,18 +477,18 @@ public class MediaFileServiceImpl implements MediaFileService {
             RemoveObjectsArgs removeObjectsArgs = RemoveObjectsArgs.builder().bucket(bucket_video).objects(deleteObjects).build();
             Iterable<Result<DeleteError>> results = minioClient.removeObjects(removeObjectsArgs);
             //需要遍历结果才能成功
-            results.forEach(r->{
+            results.forEach(r -> {
                 DeleteError deleteError = null;
                 try {
                     deleteError = r.get();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    log.error("清楚分块文件失败,objectname:{}",deleteError.objectName(),e);
+                    log.error("清楚分块文件失败,objectname:{}", deleteError.objectName(), e);
                 }
             });
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("清楚分块文件失败,chunkFileFolderPath:{}",chunkFileFolderPath,e);
+            log.error("清楚分块文件失败,chunkFileFolderPath:{}", chunkFileFolderPath, e);
         }
     }
 

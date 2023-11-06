@@ -5,8 +5,12 @@ import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.search.dto.SearchCourseParamDto;
 import com.xuecheng.search.dto.SearchPageResultDto;
+import com.xuecheng.search.feignclient.MyCourseTableParams;
+import com.xuecheng.search.feignclient.MyCourseTablesServiceClient;
+import com.xuecheng.search.feignclient.XcCourseTables;
 import com.xuecheng.search.po.CourseIndex;
 import com.xuecheng.search.service.CourseSearchService;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.TotalHits;
@@ -39,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @description 课程搜索service实现类
@@ -53,10 +58,13 @@ public class CourseSearchServiceImpl implements CourseSearchService {
     private String sourceFields;
 
     @Autowired
+    MyCourseTablesServiceClient myCourseTablesServiceClient;
+
+    @Autowired
     RestHighLevelClient client;
 
     @Override
-    public SearchPageResultDto<CourseIndex> queryCoursePubIndex(PageParams pageParams, SearchCourseParamDto courseSearchParam) {
+    public SearchPageResultDto<CourseIndex> queryCoursePubIndex(PageParams pageParams, SearchCourseParamDto courseSearchParam, String userId) {
 
         //设置索引
         SearchRequest searchRequest = new SearchRequest(courseIndexStore);
@@ -172,8 +180,20 @@ public class CourseSearchServiceImpl implements CourseSearchService {
             courseIndex.setName(name);
 
             list.add(courseIndex);
-
         }
+
+        if (userId != null) {
+            MyCourseTableParams myCourseTableParams = new MyCourseTableParams();
+            myCourseTableParams.setUserId(userId);
+            PageResult<XcCourseTables> mycoursetables = myCourseTablesServiceClient.mycoursetable(myCourseTableParams);
+            List<XcCourseTables> myCourseTablesList = mycoursetables.getItems();
+            List<Long> myCourseIds = myCourseTablesList.stream().filter(item -> item.getCourseId() > 0)
+                    .map(XcCourseTables::getCourseId).collect(Collectors.toList());
+            list = list.stream().filter(item -> {
+                return myCourseIds.contains(item.getId());
+            }).collect(Collectors.toList());
+        }
+
         SearchPageResultDto<CourseIndex> pageResult = new SearchPageResultDto<>(list, totalHits.value, pageNo, pageSize);
 
         //获取聚合结果

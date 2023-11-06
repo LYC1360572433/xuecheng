@@ -47,7 +47,7 @@ public class FreemarkerTest {
         configuration.setDefaultEncoding("utf-8");
 
         //指定模板文件名称 得到模版 要写全
-        Template template = configuration.getTemplate("course_template.ftl");
+        Template template = configuration.getTemplate("course_template1.ftl");
 
         //准备数据 拿到课程信息 不要把这个直接扔到processTemplateIntoString里面，会有问题(虽然不会报错)
         CoursePreviewDto coursePreviewInfo = coursePublishService.getCoursePreviewInfo(2L);

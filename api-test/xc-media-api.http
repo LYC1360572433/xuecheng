@@ -7,3 +7,10 @@ Content-Disposition: form-data; name="filedata"; filename="1.JPG"
 Content-Type: application/octet-stream
 
 < D:\soft\minio\upload\1.JPG
+
+
+###
+POST localhost:63050/media/upload/checkfile
+
+###
+POST 47.115.227.118:63050/media/upload/checkfile

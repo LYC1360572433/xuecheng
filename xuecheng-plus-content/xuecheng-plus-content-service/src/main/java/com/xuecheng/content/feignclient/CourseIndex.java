@@ -22,6 +22,11 @@ public class CourseIndex implements Serializable {
     private Long id;
 
     /**
+     * 选择该课程的用户id
+     */
+    private String[] chooseUsersId;
+
+    /**
      * 机构ID
      */
     private Long companyId;
